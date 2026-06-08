@@ -1,0 +1,136 @@
+.buttonsContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 1.5rem;
+  gap: 1.5rem;
+}
+
+.questionInfo {
+  text-align: center;
+  padding: 1rem;
+}
+
+.questionNumber {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  color: #00d4ff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.questionText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+.buttonsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  flex: 1;
+}
+
+.answerButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  background: linear-gradient(135deg, var(--btn-color), color-mix(in srgb, var(--btn-color) 60%, #000));
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  min-height: 120px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.answerButton:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+}
+
+.answerButton:active {
+  transform: scale(0.95);
+}
+
+.answerButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.buttonLetter {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.buttonText {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Estado: Ya respondió */
+.answeredContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.answeredIcon {
+  font-size: 4rem;
+  animation: bounceIn 0.6s ease;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.answeredTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #00ff88;
+}
+
+.answeredText {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.answeredText strong {
+  color: #00d4ff;
+}
+
+.waitingText {
+  font-family: 'Inter', sans-serif;
+  color: rgba(255, 255, 255, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}

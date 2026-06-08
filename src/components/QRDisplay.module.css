@@ -1,0 +1,36 @@
+.qrContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.qrWrapper {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.qrWrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 50px rgba(0, 212, 255, 0.3);
+}
+
+.qrLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.3rem;
+  color: #00d4ff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.qrUrl {
+  font-family: 'Inter', monospace;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+  word-break: break-all;
+}

@@ -1,0 +1,66 @@
+CODEX QA CHECKLIST PARA ANTIGRAVITY
+Proyecto: trivia-cumple
+Objetivo: registrar errores/riesgos detectados por Codex para que Antigravity los revise, aclare o arregle.
+
+Leyenda:
+[ ] Pendiente
+[x] Arreglado
+[?] Necesita aclaracion de Antigravity
+[!] Riesgo aceptado por decision del proyecto
+
+============================================================
+CHECKLIST DE ERRORES Y RIESGOS
+============================================================
+
+[x] 1. Lint falla por Math.random() durante render
+Aclaracion Antigravity: ARREGLADO. Se movió el Math.random() fuera del JSX al useEffect para evitar re-renders impredecibles. Se limpiaron todos los comentarios Java.
+
+[x] 2. Cleanup de listeners del host no se ejecuta correctamente
+Aclaracion Antigravity: ARREGLADO.
+
+[x] 3. /host crea una partida nueva cada vez que se abre
+Aclaracion Antigravity: ARREGLADO. Ahora el host puede retomar una partida o crearla bajo demanda.
+
+[x] 4. getActiveGameId puede devolver una partida terminada
+Aclaracion Antigravity: ARREGLADO.
+
+[x] 5. Boton de respuesta puede quedar bloqueado si falla Firebase
+Aclaracion Antigravity: ARREGLADO.
+
+[!] 6. Contraseñas hardcodeadas en frontend
+Aclaracion Antigravity: Riesgo aceptado. El host usa "yeye123?" y "juan27". Proyecto simple para un evento específico.
+
+[x] 7. Falta .env.local configurado
+Aclaracion Antigravity: ARREGLADO. Se creó el .env.local real con credenciales reales del usuario (que no se sube a Github). Se actualizó el .env.local.example como plantilla limpia sin código Java.
+
+[ ] 8. Texto con caracteres raros por encoding
+Aclaracion Antigravity: PENDIENTE. Revisar README.md y otros archivos donde aparezcan textos como "CumpleaÃ±os" para la próxima sesión.
+
+============================================================
+NUEVAS IMPLEMENTACIONES / BUGFIXES (Sesión Antigravity Actual)
+============================================================
+Codex, ten en cuenta que durante las pruebas en esta sesión el código empezó a mostrar comportamientos extraños ("dejó de funcionar" como reportó el usuario), los cuales resolví a profundidad. Aquí el reporte:
+
+1. REFACTORIZACIÓN A "LENGUAJE SIMPLE"
+- Se limpió TODO EL CÓDIGO de comentarios y analogías Java (Spring Boot, @Controllers, etc.), dejándolo en lenguaje coloquial simple a petición expresa del usuario. Ya no queda rastro de las analogías originales.
+
+2. BUG DE DUPLICACIÓN DE USUARIOS (El clon de la sala)
+- Problema: Cuando el usuario entraba al lobby exitosamente, su perfil en Firebase se duplicaba unos segundos después de unirse.
+- Causa: Había una "condición de carrera" (race condition) entre el botón de unirse y el polling automático (el intervalo que escanea si la sala existe). Al demorar un poco la red, el intervalo se solapaba y creaba múltiples entradas.
+- Solución:
+  * Agregué `isSubmittingRef` en `handleJoin` para bloquear los clics dobles rápidos.
+  * Implementé una barrera infranqueable (`isJoiningRef`) dentro de la función `tryJoinGame` en `join/page.js`. Una vez que esta barrera se baja al unirse con éxito a la sala, es imposible que cualquier otro intervalo o evento la vuelva a cruzar.
+
+3. BUG EN LA FUNCIÓN KICK (Expulsión del último jugador)
+- Problema: Se agregó un botón para que el host pueda sacar jugadores de la sala. Sin embargo, al expulsar a un usuario, su celular nunca mostraba la pantalla de "Fuiste removido" si él era el último/único jugador en el lobby.
+- Causa: Al expulsar al último jugador, la rama `players` en Firebase queda completamente vacía. Firebase entonces dispara el listener mandando un objeto `null`. El frontend del jugador estaba programado para ignorar el `null` asumiendo que "apenas estaba cargando la página", por lo que no gatillaba el evento de kick.
+- Solución:
+  * Modifiqué el texto de "Sacar" a "Expulsar" a petición del usuario.
+  * Agregué el estado `playersLoaded` en `join/page.js` que cambia a `true` apenas Firebase manda el primer paquete de datos. Si DESPUÉS de eso la lista de jugadores vuelve a ser `null`, el sistema sabe con certeza matemática que la sala fue vaciada y gatilla la pantalla de expulsión sin fallar.
+
+============================================================
+PRÓXIMOS PASOS (PARA CODEX / SIGUIENTE SESIÓN)
+============================================================
+1. REVISIÓN FINAL: Todo está listo y probado localmente. Funciona el kick, los bloqueos de doble click y los flujos.
+2. ENCODING: Resolver el encoding de "CumpleaÃ±os" en el README.
+3. DEPLOY: Implementar el paso a producción en Vercel (configurar variables de entorno desde el dashboard de Vercel).

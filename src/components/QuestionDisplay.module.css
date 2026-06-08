@@ -1,0 +1,234 @@
+.questionContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  gap: 2rem;
+  min-height: 100vh;
+  justify-content: center;
+}
+
+.progressBar {
+  width: 100%;
+  max-width: 900px;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.questionCounter {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  color: #00d4ff;
+  font-weight: 600;
+}
+
+.answerCounter {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.progressTrack {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff, #00ff88);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.questionCard {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  padding: 2.5rem 3rem;
+  width: 100%;
+  max-width: 900px;
+  text-align: center;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.questionText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.4;
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  max-width: 900px;
+}
+
+.optionCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, var(--option-color), color-mix(in srgb, var(--option-color) 70%, #000));
+  border-radius: 16px;
+  animation: slideInOption 0.4s ease-out both;
+  transition: transform 0.2s ease;
+}
+
+.optionCard:hover {
+  transform: scale(1.02);
+}
+
+@keyframes slideInOption {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.optionLetter {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.optionText {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.15rem;
+  color: #ffffff;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.resultsButton {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ff6b6b, #e74c3c);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.resultsButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(255, 107, 107, 0.5);
+}
+
+/* Temporizador informativo */
+.timer {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+
+/* Grilla de estado de jugadores */
+.playerStatusGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  max-width: 900px;
+}
+
+.playerStatusColumn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.playerStatusLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.playerStatusList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.playerStatusEmpty {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.25);
+  font-style: italic;
+}
+
+.playerStatusChip {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+}
+
+.chipAnswered {
+  background: rgba(0, 255, 136, 0.15);
+  color: #00ff88;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.chipPending {
+  background: rgba(255, 193, 7, 0.1);
+  color: rgba(255, 193, 7, 0.8);
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+@media (max-width: 768px) {
+  .questionText { font-size: 1.4rem; }
+  .optionsGrid { grid-template-columns: 1fr; }
+  .optionCard { padding: 1rem 1.2rem; }
+  .playerStatusGrid { grid-template-columns: 1fr; }
+}
