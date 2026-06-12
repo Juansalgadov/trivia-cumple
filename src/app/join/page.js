@@ -300,6 +300,7 @@ export default function JoinPage() {
               isJoiningRef.current = false;
               isSubmittingRef.current = false;
               setOpenSubmitted(false);
+              setOpenAnswer('');
               setScreen('name');
               setNickname('');
               setDisplayNickname('');
@@ -334,6 +335,7 @@ export default function JoinPage() {
               isJoiningRef.current = false;
               isSubmittingRef.current = false;
               setOpenSubmitted(false);
+              setOpenAnswer('');
               setScreen('name');
               setNickname('');
               setDisplayNickname('');

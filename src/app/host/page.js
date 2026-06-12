@@ -151,6 +151,7 @@ export default function HostPage() {
     try {
       const newGameId = await createGame();
       setGameId(newGameId);
+      setShowAnswers(false);
 
       // Conectamos los vigilantes y guardamos la función para apagarlos después
       unsubsRef.current.game = onGameStateChanged(newGameId, (state) => {
@@ -173,6 +174,7 @@ export default function HostPage() {
   // Arranca el juego: pasa de la sala de espera a la primera pregunta
   const handleStartGame = useCallback(async () => {
     if (!gameId) return;
+    setShowAnswers(false);
     await setCurrentQuestion(gameId, 0);
   }, [gameId]);
 

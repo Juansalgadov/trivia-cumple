@@ -84,9 +84,18 @@ export function generateRanking(players, questions) {
   // Ordenamos la lista de mayor a menor nota
   ranking.sort((a, b) => b.grade - a.grade);
 
-  // Asignamos el puesto a cada uno (1°, 2°, 3°...)
+  // Asignamos el puesto a cada uno (1°, 2°, 3...)
+  // Implementamos "Dense Ranking": si empatan en nota, reciben la misma posición.
+  let currentPosition = 1;
   ranking.forEach((entry, index) => {
-    entry.position = index + 1;
+    if (index > 0 && entry.grade === ranking[index - 1].grade) {
+      // Empate con el anterior, misma posición
+      entry.position = ranking[index - 1].position;
+    } else {
+      // Nueva nota, siguiente posición secuencial (1, 2, 3...)
+      entry.position = currentPosition;
+    }
+    currentPosition = entry.position + 1; // El siguiente que no empate tendrá la posición que sigue
   });
 
   return ranking;

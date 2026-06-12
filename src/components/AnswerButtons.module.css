@@ -96,18 +96,18 @@
 .buttonLetter {
   font-family: 'Syne', sans-serif;
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 700;
   color: rgba(255, 255, 255, 0.95);
   line-height: 1;
 }
 
 .buttonText {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.88);
-  font-weight: 500;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.35;
 }
 
 /* ===== Estado seleccionado ===== */

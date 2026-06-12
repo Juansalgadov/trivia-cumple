@@ -114,43 +114,98 @@ export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
         )}
       </div>
 
-      <div className={styles.rankingList}>
-        {orderedRanking.map((entry, index) => {
-          // Revelamos de abajo hacia arriba: si hay 14 jugadores, 
-          // el index 13 (último) se revela con revealedCount = 1
-          const isRevealed = index >= orderedRanking.length - revealedCount;
-          
-          if (!isRevealed) return null;
-
-          // La posición real en el ranking (1 = mejor)
-          const isPerfect = entry.grade >= 8.0;
-          const isTop3 = entry.position <= 3;
-
-          return (
-            <div
-              key={entry.playerId}
-              className={`${styles.rankingRow} ${isPerfect ? styles.perfectRow : ''} ${isTop3 ? styles.topRow : ''}`}
-              style={{ animationDelay: '0s' }}
-            >
-              <div className={styles.position}>
-                {POSITION_EMOJIS[entry.position] || (
-                  <span className={styles.positionNumber}>{entry.position}</span>
-                )}
-              </div>
-              <div className={styles.playerInfo}>
-                <span className={styles.nickname}>{entry.nickname}</span>
-                {entry.bonus && <span className={styles.bonusTag}>+⭐</span>}
-              </div>
-              <div className={styles.scoreSection}>
-                <span className={styles.score}>{entry.score}/14</span>
-              </div>
-              <div className={`${styles.gradeSection} ${isPerfect ? styles.perfectGrade : ''}`}>
-                <span className={styles.grade}>{entry.grade.toFixed(1)}</span>
-                {isPerfect && <span className={styles.perfectBadge}>🔥 PERFECTO</span>}
-              </div>
+      <div className={styles.leaderboardLayout}>
+        {/* === PODIUM (Top 3) === */}
+        <div className={styles.podiumContainer}>
+          {/* Segundo Lugar (Izquierda) */}
+          <div className={`${styles.podiumStep} ${styles.stepSilver}`}>
+            {orderedRanking.filter(r => r.position === 2).map(entry => {
+              const globalIndex = orderedRanking.findIndex(e => e.playerId === entry.playerId);
+              const isRevealed = globalIndex >= orderedRanking.length - revealedCount;
+              if (!isRevealed) return null;
+              return (
+                <div key={entry.playerId} className={styles.podiumPlayer}>
+                  <div className={styles.podiumAvatar}>🥈</div>
+                  <div className={styles.podiumName}>{entry.nickname}</div>
+                  <div className={styles.podiumScore}>{entry.grade.toFixed(1)}</div>
+                </div>
+              );
+            })}
+            <div className={styles.podiumBlock}>
+              <span className={styles.podiumRank}>2</span>
             </div>
-          );
-        })}
+          </div>
+
+          {/* Primer Lugar (Centro) */}
+          <div className={`${styles.podiumStep} ${styles.stepGold}`}>
+            {orderedRanking.filter(r => r.position === 1).map(entry => {
+              const globalIndex = orderedRanking.findIndex(e => e.playerId === entry.playerId);
+              const isRevealed = globalIndex >= orderedRanking.length - revealedCount;
+              if (!isRevealed) return null;
+              return (
+                <div key={entry.playerId} className={styles.podiumPlayer}>
+                  <div className={styles.podiumAvatar}>🥇</div>
+                  <div className={styles.podiumName}>{entry.nickname}</div>
+                  <div className={styles.podiumScore}>{entry.grade.toFixed(1)}</div>
+                </div>
+              );
+            })}
+            <div className={styles.podiumBlock}>
+              <span className={styles.podiumRank}>1</span>
+            </div>
+          </div>
+
+          {/* Tercer Lugar (Derecha) */}
+          <div className={`${styles.podiumStep} ${styles.stepBronze}`}>
+            {orderedRanking.filter(r => r.position === 3).map(entry => {
+              const globalIndex = orderedRanking.findIndex(e => e.playerId === entry.playerId);
+              const isRevealed = globalIndex >= orderedRanking.length - revealedCount;
+              if (!isRevealed) return null;
+              return (
+                <div key={entry.playerId} className={styles.podiumPlayer}>
+                  <div className={styles.podiumAvatar}>🥉</div>
+                  <div className={styles.podiumName}>{entry.nickname}</div>
+                  <div className={styles.podiumScore}>{entry.grade.toFixed(1)}</div>
+                </div>
+              );
+            })}
+            <div className={styles.podiumBlock}>
+              <span className={styles.podiumRank}>3</span>
+            </div>
+          </div>
+        </div>
+
+        {/* === RESTO DEL RANKING === */}
+        <div className={styles.rankingList}>
+          {orderedRanking.filter(r => r.position > 3).map((entry) => {
+            const globalIndex = orderedRanking.findIndex(e => e.playerId === entry.playerId);
+            const isRevealed = globalIndex >= orderedRanking.length - revealedCount;
+            
+            if (!isRevealed) return null;
+
+            return (
+              <div
+                key={entry.playerId}
+                className={styles.rankingRow}
+                style={{ animationDelay: '0s' }}
+              >
+                <div className={styles.position}>
+                  <span className={styles.positionNumber}>{entry.position}</span>
+                </div>
+                <div className={styles.playerInfo}>
+                  <span className={styles.nickname}>{entry.nickname}</span>
+                  {entry.bonus && <span className={styles.bonusTag}>+⭐</span>}
+                </div>
+                <div className={styles.scoreSection}>
+                  <span className={styles.score}>{entry.score}/14</span>
+                </div>
+                <div className={styles.gradeSection}>
+                  <span className={styles.grade}>{entry.grade.toFixed(1)}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Botón de revelar — desaparece cuando todos han sido revelados */}

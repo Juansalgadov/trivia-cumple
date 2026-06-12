@@ -112,7 +112,7 @@ body {
 /* ===== TIPOGRAFÍA BASE ===== */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.15;
   color: var(--color-text);
 }
