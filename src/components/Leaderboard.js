@@ -104,18 +104,11 @@ export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
       )}
 
       <div className={styles.header}>
-        <h1 className={styles.title}>🏆 Ranking Final</h1>
-        <p className={styles.subtitle}>Trivia de Cumpleaños de Juan</p>
+        <div className={styles.titleBadge}>Trivia de Cumpleaños de Juan</div>
+        <h1 className={styles.title}>Ranking Final</h1>
         {!allRevealed && (
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-            Presiona <kbd style={{
-              background: 'rgba(255,255,255,0.15)',
-              border: '1px solid rgba(255,255,255,0.3)',
-              borderRadius: '4px',
-              padding: '0.1rem 0.5rem',
-              fontFamily: 'monospace',
-              fontSize: '0.85rem',
-            }}>→</kbd> o el botón para revelar el siguiente puesto
+          <p className={styles.revealHint}>
+            Presiona <kbd className={styles.kbdHint}>→</kbd> o el botón para revelar el siguiente puesto
           </p>
         )}
       </div>

@@ -10,53 +10,43 @@ export default function Lobby({ players, onStart, joinUrl, isHost, onRemovePlaye
 
   return (
     <div className={styles.lobbyContainer}>
-      {/* Título */}
+
+      {/* Titulo */}
       <div className={styles.titleSection}>
-        <h1 className={styles.mainTitle}>🎂 Trivia de Cumpleaños</h1>
+        <div className={styles.eyebrow}>
+          <span className={styles.eyebrowDot} />
+          Sala de espera
+        </div>
+        <h1 className={styles.mainTitle}>
+          Trivia de <span className={styles.mainTitleAccent}>Cumpleaños</span>
+        </h1>
         <p className={styles.subtitle}>¿Cuánto conoces a Juan?</p>
       </div>
 
+      {/* Contenido: QR + Jugadores */}
       <div className={styles.lobbyContent}>
-        {/* Panel izquierdo: QR de acceso */}
+
+        {/* QR */}
         {isHost && (
           <div className={styles.qrSection}>
-            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginBottom: '0.75rem', textAlign: 'center' }}>
-              📱 Escanea para unirte
-            </p>
-            <div style={{
-              background: '#ffffff',
-              borderRadius: '16px',
-              padding: '1rem',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 30px rgba(0,212,255,0.3)',
-            }}>
+            <span className={styles.qrLabel}>Escanea para unirte</span>
+            <div className={styles.qrWrapper}>
               <QRCodeSVG
                 value={qrUrl}
-                size={180}
+                size={190}
                 bgColor="#ffffff"
-                fgColor="#1a1a2e"
+                fgColor="#08080f"
                 level="M"
               />
             </div>
-            <p style={{
-              color: '#00d4ff',
-              fontSize: '0.78rem',
-              marginTop: '0.6rem',
-              fontFamily: 'monospace',
-              textAlign: 'center',
-              wordBreak: 'break-all',
-            }}>
-              {qrUrl}
-            </p>
+            <span className={styles.qrUrl}>{qrUrl}</span>
           </div>
         )}
 
-        {/* Panel derecho: Lista de jugadores */}
+        {/* Lista de jugadores */}
         <div className={styles.playersSection}>
           <div className={styles.playersHeader}>
-            <h2 className={styles.playersTitle}>Jugadores</h2>
+            <h2 className={styles.playersTitle}>Jugadores conectados</h2>
             <span className={styles.playerCount}>{playerCount}</span>
           </div>
 
@@ -68,38 +58,20 @@ export default function Lobby({ players, onStart, joinUrl, isHost, onRemovePlaye
                 <div
                   key={playerId}
                   className={styles.playerCard}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  style={{ animationDelay: `${index * 0.07}s` }}
                 >
-                  <span className={styles.playerEmoji}>🎮</span>
+                  <div className={styles.playerAvatar}>
+                    {player.nickname.charAt(0)}
+                  </div>
                   <span className={styles.playerName}>{player.nickname}</span>
 
-                  {/* Botón de kick — solo visible para el host */}
                   {isHost && onRemovePlayer && (
                     <button
+                      className={styles.kickButton}
                       onClick={() => onRemovePlayer(playerId, player.nickname)}
                       title={`Expulsar a ${player.nickname}`}
-                      style={{
-                        marginLeft: 'auto',
-                        background: 'rgba(255, 80, 80, 0.15)',
-                        border: '1px solid rgba(255, 80, 80, 0.3)',
-                        borderRadius: '8px',
-                        color: '#ff6b6b',
-                        fontSize: '0.8rem',
-                        padding: '0.25rem 0.6rem',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        flexShrink: 0,
-                      }}
-                      onMouseOver={e => {
-                        e.currentTarget.style.background = 'rgba(255, 80, 80, 0.35)';
-                        e.currentTarget.style.borderColor = '#ff6b6b';
-                      }}
-                      onMouseOut={e => {
-                        e.currentTarget.style.background = 'rgba(255, 80, 80, 0.15)';
-                        e.currentTarget.style.borderColor = 'rgba(255, 80, 80, 0.3)';
-                      }}
                     >
-                      ✕ Expulsar
+                      Expulsar
                     </button>
                   )}
                 </div>
@@ -109,48 +81,26 @@ export default function Lobby({ players, onStart, joinUrl, isHost, onRemovePlaye
         </div>
       </div>
 
-      {/* Botón de inicio — siempre visible para el host, deshabilitado sin jugadores */}
+      {/* Botones de accion del host */}
       {isHost && (
-        <button
-          className={styles.startButton}
-          onClick={onStart}
-          disabled={playerCount === 0}
-          style={playerCount === 0 ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
-          title={playerCount === 0 ? 'Necesitas al menos 1 jugador para iniciar' : ''}
-        >
-          🚀 INICIAR JUEGO {playerCount === 0 ? '(sin jugadores)' : `(${playerCount})`}
-        </button>
+        <div className={styles.actionsRow}>
+          <button
+            className={styles.startButton}
+            onClick={onStart}
+            disabled={playerCount === 0}
+            title={playerCount === 0 ? 'Necesitas al menos 1 jugador' : ''}
+          >
+            {playerCount === 0 ? 'Esperando jugadores...' : `Iniciar juego (${playerCount})`}
+          </button>
+
+          {onCloseLobby && (
+            <button className={styles.closeLobbyButton} onClick={onCloseLobby}>
+              Cerrar lobby
+            </button>
+          )}
+        </div>
       )}
 
-      {/* Botón de cerrar lobby — siempre visible para el host */}
-      {isHost && onCloseLobby && (
-        <button
-          onClick={onCloseLobby}
-          style={{
-            marginTop: '0.75rem',
-            padding: '0.65rem 2rem',
-            background: 'rgba(255, 80, 80, 0.12)',
-            border: '1px solid rgba(255, 80, 80, 0.3)',
-            borderRadius: '12px',
-            color: '#ff6b6b',
-            fontSize: '0.95rem',
-            fontFamily: 'Outfit, sans-serif',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-          }}
-          onMouseOver={e => {
-            e.currentTarget.style.background = 'rgba(255, 80, 80, 0.28)';
-            e.currentTarget.style.borderColor = '#ff6b6b';
-          }}
-          onMouseOut={e => {
-            e.currentTarget.style.background = 'rgba(255, 80, 80, 0.12)';
-            e.currentTarget.style.borderColor = 'rgba(255, 80, 80, 0.3)';
-          }}
-        >
-          ❌ Cerrar Lobby
-        </button>
-      )}
     </div>
   );
 }

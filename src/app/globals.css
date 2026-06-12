@@ -1,5 +1,5 @@
 /* Importar fuentes ANTES de las directivas de Tailwind (requerido por CSS spec) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,65 +7,61 @@
 
 /* ============================================================================
  * globals.css — Design System Global de la Trivia
- * ============================================================================
- * ANALOGÍA JAVA: Esto es como el tema global de una app Spring + Thymeleaf.
- * En Spring Boot con Thymeleaf, definirías los estilos base en un archivo CSS
- * referenciado desde el layout principal. Aquí hacemos lo mismo: definimos
- * colores, tipografías y estilos base que aplican a TODA la aplicación.
+ * Paleta: Midnight Deep + Amber Gold + Electric Cyan + Coral + White
  * ============================================================================ */
 
-/* ===== IMPORTACIÓN DE FUENTES (Google Fonts) ===== */
-/* ANALOGÍA JAVA: Esto es como declarar dependencias en pom.xml.
-   Importamos dos fuentes tipográficas de Google para darle un look premium. */
-
-/* ===== VARIABLES CSS (Custom Properties) ===== */
-/* ANALOGÍA JAVA: Estas son como constantes globales en una clase Constants.java
-   o como valores en application.properties que se reutilizan en toda la app.
-   Ejemplo: public static final String PRIMARY_COLOR = "#00d4ff"; */
 :root {
-  /* --- Colores principales --- */
-  --color-bg-start: #0f0c29;        /* Inicio del gradiente de fondo */
-  --color-bg-mid: #302b63;          /* Medio del gradiente */
-  --color-bg-end: #24243e;          /* Final del gradiente */
-  
-  --color-primary: #00d4ff;         /* Cyan eléctrico — acento principal */
-  --color-secondary: #ff6b6b;       /* Coral vibrante — acento secundario */
-  --color-success: #00ff88;         /* Verde éxito */
-  
-  /* --- Colores de opciones (estilo Kahoot) --- */
-  --color-option-a: #e74c3c;        /* Rojo */
-  --color-option-b: #3498db;        /* Azul */
-  --color-option-c: #f1c40f;        /* Amarillo */
-  --color-option-d: #2ecc71;        /* Verde */
-  
-  /* --- Glassmorphism --- */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-blur: 10px;
-  
+  /* --- Fondo --- */
+  --color-bg:         #08080f;
+  --color-bg-card:    rgba(255, 255, 255, 0.04);
+  --color-bg-card-2:  rgba(255, 255, 255, 0.07);
+
+  /* --- Marca --- */
+  --color-gold:       #f5a623;   /* Amber dorado — acento premium de cumpleaños */
+  --color-gold-light: #ffd166;
+  --color-cyan:       #00d4ff;   /* Cyan eléctrico — interactivo */
+  --color-cyan-dim:   rgba(0, 212, 255, 0.15);
+
+  /* --- Estados y opciones --- */
+  --color-success:    #06d6a0;
+  --color-error:      #ff6b6b;
+
+  /* --- Colores de opciones (Kahoot style, más saturados) --- */
+  --color-option-a:   #ef233c;   /* Rojo fuerte */
+  --color-option-b:   #4361ee;   /* Azul índigo */
+  --color-option-c:   #f5a623;   /* Amber (reusar gold) */
+  --color-option-d:   #06d6a0;   /* Verde esmeralda */
+
+  /* --- Texto --- */
+  --color-text:       #f8f8ff;
+  --color-text-dim:   rgba(248, 248, 255, 0.5);
+  --color-text-faint: rgba(248, 248, 255, 0.25);
+
+  /* --- Bordes glass --- */
+  --glass-border:     rgba(255, 255, 255, 0.08);
+  --glass-border-2:   rgba(255, 255, 255, 0.14);
+
   /* --- Tipografía --- */
-  --font-display: 'Outfit', sans-serif;   /* Para títulos y números grandes */
-  --font-body: 'Inter', sans-serif;       /* Para texto de cuerpo */
-  
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'Space Grotesk', sans-serif;
+
   /* --- Espaciado --- */
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
+  --space-xs:  0.25rem;
+  --space-sm:  0.5rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2rem;
   --space-2xl: 3rem;
-  
+
   /* --- Border Radius --- */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+  --radius-xl:   28px;
   --radius-full: 9999px;
 }
 
 /* ===== RESET Y BASE ===== */
-/* ANALOGÍA JAVA: Es como un @Configuration que inicializa valores por defecto.
-   Resetea los estilos del navegador para tener una base limpia. */
 *,
 *::before,
 *::after {
@@ -75,76 +71,67 @@
 }
 
 html {
-  /* Scroll suave para anclas internas */
   scroll-behavior: smooth;
-  /* Prevenir zoom en inputs de móvil (iOS Safari) */
   -webkit-text-size-adjust: 100%;
+  background-color: var(--color-bg);
 }
 
 body {
-  /* Fondo con gradiente oscuro "deep space" */
-  background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-mid), var(--color-bg-end));
-  /* Fondo fijo para que el gradiente no se mueva al hacer scroll */
-  background-attachment: fixed;
-  
-  /* Tipografía base */
+  background-color: var(--color-bg);
   font-family: var(--font-body);
-  color: #ffffff;
-  
-  /* Altura mínima de la viewport */
+  color: var(--color-text);
   min-height: 100vh;
-  min-height: 100dvh; /* Dynamic viewport height — mejor soporte móvil */
-  
-  /* Anti-aliasing para texto más suave */
+  min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
-  /* Prevenir el overscroll bounce en iOS */
   overscroll-behavior: none;
+  /* Grid sutil de fondo — la textura que da vida */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245, 166, 35, 0.08) 0%, transparent 60%),
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 60px 60px, 60px 60px;
+  background-attachment: fixed;
 }
 
-/* ===== SCROLLBAR PERSONALIZADA ===== */
-/* Solo para navegadores basados en Chromium (Chrome, Edge, etc.) */
+/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
+  background: rgba(245, 166, 35, 0.25);
+  border-radius: 2px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(245, 166, 35, 0.45);
 }
 
 /* ===== TIPOGRAFÍA BASE ===== */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 700;
-  line-height: 1.2;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-text);
 }
 
 p {
-  line-height: 1.6;
+  line-height: 1.65;
+  font-family: var(--font-body);
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--color-cyan);
   text-decoration: none;
   transition: color 0.2s ease;
 }
-
 a:hover {
-  color: #33ddff;
+  color: var(--color-gold);
 }
 
 /* ===== BOTONES BASE ===== */
-/* ANALOGÍA JAVA: Es como definir una clase AbstractButton con estilos predeterminados */
 button {
   font-family: var(--font-body);
   cursor: pointer;
@@ -152,94 +139,115 @@ button {
   outline: none;
   transition: all 0.2s ease;
 }
-
 button:focus-visible {
-  /* Accesibilidad: outline visible al navegar con teclado */
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
 }
 
 /* ===== INPUTS BASE ===== */
 input, textarea {
   font-family: var(--font-body);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--glass-border);
+  background: var(--color-bg-card-2);
+  border: 1px solid var(--glass-border-2);
   border-radius: var(--radius-md);
-  color: #ffffff;
-  padding: 0.75rem 1rem;
+  color: var(--color-text);
+  padding: 0.8rem 1rem;
   font-size: 1rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  -webkit-appearance: none;
 }
-
 input:focus, textarea:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.12);
 }
-
 input::placeholder, textarea::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--color-text-faint);
 }
 
-/* ===== UTILIDADES DE ANIMACIÓN ===== */
-/* Clases reutilizables para animaciones comunes */
-
+/* ===== ANIMACIONES GLOBALES ===== */
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  50%       { opacity: 1; }
 }
 
-@keyframes glow {
+@keyframes glow-gold {
+  0%, 100% { box-shadow: 0 0 20px rgba(245, 166, 35, 0.2); }
+  50%       { box-shadow: 0 0 40px rgba(245, 166, 35, 0.45); }
+}
+
+@keyframes glow-cyan {
   0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(0, 212, 255, 0.4); }
+  50%       { box-shadow: 0 0 40px rgba(0, 212, 255, 0.4); }
 }
 
-/* ===== RESPONSIVE UTILITIES ===== */
-/* ANALOGÍA JAVA: No hay equivalente directo en Java, pero piensa en esto
-   como un @Profile("mobile") vs @Profile("desktop") en Spring —
-   aplicamos configuraciones diferentes según el "entorno" (tamaño de pantalla). */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(8px); }
+  60%       { transform: translateX(-5px); }
+  80%       { transform: translateX(5px); }
+}
+
+@keyframes confettiFall {
+  0%   { transform: translateY(-20px) rotate(0deg) scale(1);   opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg) scale(0.5); opacity: 0; }
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  html {
-    font-size: 15px;
-  }
+  html { font-size: 15px; }
 }
-
 @media (max-width: 480px) {
-  html {
-    font-size: 14px;
-  }
+  html { font-size: 14px; }
 }
 
-/* ===== SELECTION STYLES ===== */
+/* ===== SELECTION ===== */
 ::selection {
-  background: rgba(0, 212, 255, 0.3);
+  background: rgba(245, 166, 35, 0.3);
   color: #ffffff;
 }

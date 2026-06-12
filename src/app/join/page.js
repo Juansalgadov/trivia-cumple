@@ -266,32 +266,9 @@ export default function JoinPage() {
   const BackButton = (
     <button
       onClick={() => router.push('/')}
-      style={{
-        position: 'fixed',
-        top: '1rem',
-        left: '1rem',
-        background: 'rgba(255,255,255,0.08)',
-        border: '1px solid rgba(255,255,255,0.15)',
-        borderRadius: '10px',
-        color: 'rgba(255,255,255,0.6)',
-        fontSize: '0.9rem',
-        padding: '0.5rem 1rem',
-        cursor: 'pointer',
-        fontFamily: 'Inter, sans-serif',
-        zIndex: 100,
-        backdropFilter: 'blur(8px)',
-        transition: 'all 0.2s ease',
-      }}
-      onMouseOver={e => {
-        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-        e.currentTarget.style.color = '#fff';
-      }}
-      onMouseOut={e => {
-        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
-      }}
+      className={styles.backButtonFloat}
     >
-      🚪 Salir de la sesión
+      ← Salir
     </button>
   );
 
@@ -308,6 +285,7 @@ export default function JoinPage() {
             Espera a que cree una nueva partida.
           </p>
           <button
+            className={styles.backToStartButton}
             onClick={() => {
               isJoiningRef.current = false;
               isSubmittingRef.current = false;
@@ -318,19 +296,8 @@ export default function JoinPage() {
               setPlayers(null);
               setPlayersLoaded(false);
             }}
-            style={{
-              marginTop: '1.5rem',
-              padding: '0.75rem 2rem',
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '10px',
-              color: '#fff',
-              fontSize: '1rem',
-              cursor: 'pointer',
-              fontFamily: 'Outfit, sans-serif',
-            }}
           >
-            🔄 Volver al inicio
+            Volver al inicio
           </button>
         </div>
       </div>
@@ -350,6 +317,7 @@ export default function JoinPage() {
             Si crees que fue un error, vuelve a intentarlo.
           </p>
           <button
+            className={styles.backToStartButton}
             onClick={() => {
               isJoiningRef.current = false;
               isSubmittingRef.current = false;
@@ -360,20 +328,8 @@ export default function JoinPage() {
               setPlayers(null);
               setPlayersLoaded(false);
             }}
-            style={{
-              marginTop: '1.5rem',
-              padding: '0.75rem 2rem',
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '10px',
-              color: '#fff',
-              fontSize: '1rem',
-              cursor: 'pointer',
-              fontFamily: 'Outfit, sans-serif',
-            }}
           >
-            🔄 Volver a intentar
-          </button>
+            Volver a intentar</button>
         </div>
       </div>
     );
@@ -435,7 +391,7 @@ export default function JoinPage() {
             <span className={styles.dot} />
             <span className={styles.dot} />
           </div>
-          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', marginTop: '1rem' }}>
+          <p style={{ color: 'var(--color-text-faint)', fontSize: '0.78rem', marginTop: '1rem' }}>
             Revisando cada {POLL_INTERVAL_MS / 1000} segundos...
           </p>
         </div>
@@ -514,7 +470,7 @@ export default function JoinPage() {
           <p className={styles.waitingText}>
             El host está revisando los resultados.
           </p>
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+          <p style={{ color: 'var(--color-text-faint)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
             Las respuestas correctas se revelarán al final del juego.
           </p>
           <div className={styles.waitingDots}>
@@ -585,8 +541,8 @@ export default function JoinPage() {
           <p className={styles.waitingText}>
             El host está revelando el ranking en la pantalla grande.
           </p>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-            Tu resultado: <strong style={{ color: '#00d4ff' }}>{myGrade.toFixed(1)}</strong> ({myScore}/14{myBonus ? ' + ⭐' : ''})
+          <p style={{ color: 'var(--color-text-dim)', fontSize: '0.88rem', marginTop: '0.5rem' }}>
+            Tu resultado: <strong style={{ color: 'var(--color-gold)' }}>{myGrade.toFixed(1)}</strong> ({myScore}/14{myBonus ? ' + ⭐' : ''})
           </p>
           <div className={styles.waitingDots}>
             <span className={styles.dot} />
