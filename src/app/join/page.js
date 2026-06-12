@@ -21,6 +21,7 @@ import { calculateScore, calculateGrade, generateRanking } from '../../lib/score
 
 import AnswerButtons from '../../components/AnswerButtons';
 import Leaderboard from '../../components/Leaderboard';
+import FloatingDecorations from '../../components/FloatingDecorations';
 
 // Cada cuántos segundos revisamos si el host ya creó la sala (mientras esperamos)
 const POLL_INTERVAL_MS = 3000;
@@ -351,10 +352,11 @@ export default function JoinPage() {
     );
   }
 
-  // ── PANTALLA 1: Formulario de nombre ──
+  // ── PANTALLA: Nombre (Ingreso) ──
   if (screen === 'name') {
     return (
       <div className={styles.joinContainer}>
+        <FloatingDecorations count={8} />
         {BackButton}
         <div className={styles.joinCard}>
           <div className={styles.joinHeader}>
@@ -435,10 +437,11 @@ export default function JoinPage() {
 
   // ── PANTALLAS DE JUEGO (screen === 'playing') ──
 
-  // Lobby: esperando que el host arranque
+  // Lobby normal
   if (phase === 'lobby') {
     return (
       <div className={styles.waitingContainer}>
+        <FloatingDecorations count={10} />
         {BackButton}
         <div className={styles.waitingCard}>
           <div className={styles.waitingIcon}>🎉</div>

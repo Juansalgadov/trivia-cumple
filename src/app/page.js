@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
+import FloatingDecorations from '../components/FloatingDecorations';
 
 const HOST_PASSWORD = 'yeye123?';
 
@@ -104,6 +105,7 @@ export default function GatewayPage() {
   return (
     <div className={`${styles.page} ${mounted ? styles.pageMounted : ''}`}>
       <ParticleCanvas />
+      <FloatingDecorations count={12} />
 
       {/* Orbs atmosfericos de glow */}
       <div className={styles.orbGold} aria-hidden="true" />
@@ -133,7 +135,9 @@ export default function GatewayPage() {
             <h1 className={styles.heroTitle}>
               <span className={styles.line1}>¿Cuánto</span>
               <span className={styles.line2}>conoces</span>
-              <span className={styles.line3}>a <em>Juan</em>?</span>
+              <span className={styles.line3}>
+                a <em>Juan</em><span className={styles.partyIcon}>🎉</span>?
+              </span>
             </h1>
 
             <p className={styles.heroSub}>
