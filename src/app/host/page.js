@@ -62,6 +62,8 @@ export default function HostPage() {
   const [openAnswers, setOpenAnswers] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [createError, setCreateError] = useState(null);
+  // Estado local para mostrar las respuestas correctas DESPUÉS del ranking
+  const [showAnswers, setShowAnswers] = useState(false);
 
   const router = useRouter();
 
@@ -427,8 +429,85 @@ export default function HostPage() {
       )}
 
       {/* FASE 4: Leaderboard final */}
-      {phase === 'final' && (
-        <Leaderboard ranking={ranking} isHost={true} />
+      {phase === 'final' && !showAnswers && (
+        <Leaderboard
+          ranking={ranking}
+          isHost={true}
+          onShowAnswers={() => setShowAnswers(true)}
+        />
+      )}
+
+      {/* FASE 5 (local, solo host): Respuestas correctas de todas las preguntas */}
+      {phase === 'final' && showAnswers && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '2rem',
+          gap: '1.5rem',
+          minHeight: '100vh',
+        }}>
+          <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2rem', color: '#f1c40f', textAlign: 'center' }}>
+            💡 Respuestas Correctas
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'Inter, sans-serif' }}>
+            Trivia de Cumpleaños de Juan
+          </p>
+          <div style={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {questions.filter(q => q.type === 'multiple').map((q, idx) => (
+              <div key={q.id} style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '14px',
+                padding: '1.2rem 1.5rem',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '1.2rem',
+              }}>
+                <span style={{
+                  fontFamily: 'Outfit, sans-serif',
+                  fontSize: '1.4rem',
+                  fontWeight: 800,
+                  color: '#00d4ff',
+                  minWidth: '2rem',
+                  textAlign: 'center',
+                }}>{q.id}</span>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', color: 'rgba(255,255,255,0.7)', marginBottom: '0.5rem' }}>{q.text}</p>
+                  <div style={{
+                    background: 'rgba(0,255,136,0.1)',
+                    border: '1px solid rgba(0,255,136,0.3)',
+                    borderRadius: '8px',
+                    padding: '0.5rem 1rem',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                  }}>
+                    <span style={{ color: '#00ff88', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
+                      ✅ {q.correctAnswer} — {q.options[q.correctAnswer]}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => setShowAnswers(false)}
+            style={{
+              marginTop: '1rem',
+              padding: '0.75rem 2rem',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '12px',
+              color: '#fff',
+              fontFamily: 'Outfit, sans-serif',
+              fontSize: '1rem',
+              cursor: 'pointer',
+            }}
+          >
+            ← Volver al Ranking
+          </button>
+        </div>
       )}
     </div>
   );

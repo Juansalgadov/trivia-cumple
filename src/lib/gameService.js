@@ -291,3 +291,14 @@ export async function getActiveGameId() {
 
   return latestGameId;
 }
+
+/**
+ * Obtiene la fase actual de una partida específica.
+ * Se usa para verificar si el juego ya empezó antes de dejar entrar a un jugador tardío.
+ */
+export async function getGamePhase(gameId) {
+  if (!database) return null;
+  const phaseRef = ref(database, `games/${gameId}/phase`);
+  const snapshot = await get(phaseRef);
+  return snapshot.val();
+}

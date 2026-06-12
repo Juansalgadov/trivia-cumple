@@ -1,10 +1,12 @@
 'use client';
 
+import { QRCodeSVG } from 'qrcode.react';
 import styles from './Lobby.module.css';
 
 export default function Lobby({ players, onStart, joinUrl, isHost, onRemovePlayer, onCloseLobby }) {
   const playerList = players ? Object.entries(players) : [];
   const playerCount = playerList.length;
+  const qrUrl = joinUrl || 'https://trivia-cumple.vercel.app/join';
 
   return (
     <div className={styles.lobbyContainer}>
@@ -15,26 +17,38 @@ export default function Lobby({ players, onStart, joinUrl, isHost, onRemovePlaye
       </div>
 
       <div className={styles.lobbyContent}>
-        {/* Panel izquierdo: URL de acceso */}
+        {/* Panel izquierdo: QR de acceso */}
         {isHost && (
           <div className={styles.qrSection}>
-            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-              📎 URL para los jugadores
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginBottom: '0.75rem', textAlign: 'center' }}>
+              📱 Escanea para unirte
             </p>
             <div style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1px solid rgba(255,255,255,0.15)',
-              borderRadius: '12px',
-              padding: '1rem 1.2rem',
-              wordBreak: 'break-all',
-              fontSize: '0.9rem',
-              color: '#00d4ff',
-              fontFamily: 'monospace',
+              background: '#ffffff',
+              borderRadius: '16px',
+              padding: '1rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 30px rgba(0,212,255,0.3)',
             }}>
-              {joinUrl || 'http://localhost:3000'}
+              <QRCodeSVG
+                value={qrUrl}
+                size={180}
+                bgColor="#ffffff"
+                fgColor="#1a1a2e"
+                level="M"
+              />
             </div>
-            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.78rem', marginTop: '0.5rem', textAlign: 'center' }}>
-              Apunta tu QR de Adobe a esta URL
+            <p style={{
+              color: '#00d4ff',
+              fontSize: '0.78rem',
+              marginTop: '0.6rem',
+              fontFamily: 'monospace',
+              textAlign: 'center',
+              wordBreak: 'break-all',
+            }}>
+              {qrUrl}
             </p>
           </div>
         )}

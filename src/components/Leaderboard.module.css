@@ -220,3 +220,69 @@
   .grade { font-size: 1.8rem; }
   .perfectGrade .grade { font-size: 2.2rem; }
 }
+
+/* Botón de revelar siguiente puesto */
+.revealNextButton {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #00d4ff, #3498db);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 1.5rem;
+}
+
+.revealNextButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(0, 212, 255, 0.5);
+}
+
+/* Botón de ver respuestas correctas (aparece al final) */
+.showAnswersButton {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f1c40f, #e67e22);
+  color: #000;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 25px rgba(241, 196, 15, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 1.5rem;
+}
+
+.showAnswersButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(241, 196, 15, 0.5);
+}
+
+/* Puntitos para la pantalla de espera de jugadores */
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

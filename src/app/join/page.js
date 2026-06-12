@@ -6,6 +6,7 @@ import styles from './join.module.css';
 
 import {
   getActiveGameId,
+  getGamePhase,
   joinGame,
   submitAnswer,
   cancelAnswer,
@@ -66,7 +67,6 @@ export default function JoinPage() {
   // Si no hay juego, inicia el polling automático
   // ──────────────────────────────────────────────────────────────────────────
   const tryJoinGame = useCallback(async (nameToUse) => {
-    // Si ya estamos ejecutando una unión, ignoramos cualquier otro intento (sea por clic o intervalo)
     if (isJoiningRef.current) return false;
     isJoiningRef.current = true;
 
@@ -74,25 +74,34 @@ export default function JoinPage() {
       const activeId = await getActiveGameId();
 
       if (activeId) {
-        // ✅ Hay un juego activo → unirse directamente
+        // Verificar si la partida ya empezó — si no está en lobby, bloquear entrada
+        const currentPhase = await getGamePhase(activeId);
+        if (currentPhase && currentPhase !== 'lobby') {
+          isJoiningRef.current = false;
+          clearInterval(pollRef.current);
+          pollRef.current = null;
+          setScreen('name');
+          setError('⛔ El juego ya comenzó. No puedes unirte en este momento.');
+          return false;
+        }
+
+        // ✅ Hay un juego activo en lobby → unirse
         clearInterval(pollRef.current);
-        pollRef.current = null; // Evita que el intervalo vuelva a dispararse
+        pollRef.current = null;
         setScreen('joining');
 
         const newPlayerId = await joinGame(activeId, nameToUse);
         setGameId(activeId);
         setPlayerId(newPlayerId);
         setScreen('playing');
-        // NO soltamos isJoiningRef.current = false. Al dejarlo en true, es IMPOSIBLE que se vuelva a unir.
         return true;
       } else {
-        // ❌ Aún no hay juego → seguir esperando
-        isJoiningRef.current = false; // Soltamos el bloqueo para el siguiente intento
+        isJoiningRef.current = false;
         setScreen('waiting');
         return false;
       }
     } catch (err) {
-      isJoiningRef.current = false; // Soltamos el bloqueo si falló
+      isJoiningRef.current = false;
       console.error('Error al unirse:', err);
       setError('Error de conexión. Intenta de nuevo.');
       setScreen('name');
@@ -166,6 +175,14 @@ export default function JoinPage() {
   useEffect(() => {
     return () => clearInterval(pollRef.current);
   }, []);
+
+  // Fix bug P15: resetear openSubmitted cada vez que el juego entra en fase open_question
+  // Evita que un estado stale de una sesión anterior marque la pregunta como ya respondida
+  useEffect(() => {
+    if (gameState?.phase === 'open_question') {
+      setOpenSubmitted(false);
+    }
+  }, [gameState?.phase]);
 
   // Detectar si el host nos sacó del lobby:
   // Fix race condition: solo marcar 'kicked' si ya han pasado al menos 2s desde que nos unimos.
@@ -486,16 +503,19 @@ export default function JoinPage() {
     );
   }
 
-  // Resultados (esperando que el host avance) — MODO SUSPENSO: no revelar si fue correcto
+  // Resultados (esperando que el host avance) — MODO SUSPENSO: no revelar nada
   if (phase === 'results') {
     return (
       <div className={styles.waitingContainer}>
         {BackButton}
         <div className={styles.waitingCard}>
           <div className={styles.waitingIcon}>⏳</div>
-          <h2 className={styles.waitingTitle}>Tiempo terminado</h2>
+          <h2 className={styles.waitingTitle}>Votación cerrada</h2>
           <p className={styles.waitingText}>
-            ¡Mira la pantalla del Host para ver la respuesta correcta!
+            El host está revisando los resultados.
+          </p>
+          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+            Las respuestas correctas se revelarán al final del juego.
           </p>
           <div className={styles.waitingDots}>
             <span className={styles.dot} />
@@ -554,17 +574,26 @@ export default function JoinPage() {
     );
   }
 
-  // Leaderboard final
+  // Leaderboard final — el jugador espera mientras el host revela el ranking en la TV
   if (phase === 'final') {
     return (
-      <div className={styles.finalContainer}>
+      <div className={styles.waitingContainer}>
         {BackButton}
-        <div className={styles.myResultCard}>
-          <h2 className={styles.myResultTitle}>Tu Resultado</h2>
-          <div className={styles.myGrade}>{myGrade.toFixed(1)}</div>
-          <p className={styles.myScore}>{myScore}/14 correctas{myBonus ? ' + ⭐ bonus' : ''}</p>
+        <div className={styles.waitingCard}>
+          <div className={styles.waitingIcon}>🏆</div>
+          <h2 className={styles.waitingTitle}>¡Juego terminado!</h2>
+          <p className={styles.waitingText}>
+            El host está revelando el ranking en la pantalla grande.
+          </p>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+            Tu resultado: <strong style={{ color: '#00d4ff' }}>{myGrade.toFixed(1)}</strong> ({myScore}/14{myBonus ? ' + ⭐' : ''})
+          </p>
+          <div className={styles.waitingDots}>
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+          </div>
         </div>
-        <Leaderboard ranking={ranking} isHost={false} />
       </div>
     );
   }

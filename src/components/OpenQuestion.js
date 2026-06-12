@@ -44,6 +44,11 @@ export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBo
   // Convertimos el mapa de jugadores en una lista para poder recorrerla
   const playerEntries = players ? Object.entries(players) : [];
 
+  // Verificar si YA se asignó el punto a alguien — solo puede haber UN ganador del bonus
+  const bonusAlreadyAwarded = openAnswers
+    ? Object.values(openAnswers).some((a) => a.bonusAwarded)
+    : false;
+
   return (
     <div className={styles.openContainer}>
       <div className={styles.header}>
@@ -80,6 +85,16 @@ export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBo
                         onClick={() => onRemoveBonus(playerId)}
                       >
                         ❌ Quitar Punto
+                      </button>
+                    ) : bonusAlreadyAwarded ? (
+                      /* Ya hay otro jugador con el bonus — botón bloqueado */
+                      <button
+                        className={styles.bonusButton}
+                        disabled
+                        style={{ opacity: 0.3, cursor: 'not-allowed' }}
+                        title="Ya se asignó el punto a otro jugador. Quítaselo primero."
+                      >
+                        ⭐ Asignar Punto
                       </button>
                     ) : (
                       <button
