@@ -1,10 +1,5 @@
 /* ============================================================================
- * host.module.css — Estilos de la Vista del Host (PC/TV)
- * ============================================================================
- * ANALOGÍA JAVA: Estos son los estilos específicos de la vista del host,
- * como un archivo CSS dedicado para una plantilla Thymeleaf específica.
- * CSS Modules garantiza que estos nombres de clase son ÚNICOS (no colisionan
- * con otros archivos), similar a cómo en Java cada clase tiene su namespace.
+ * host.module.css — Vista del Host (PC/TV)
  * ============================================================================ */
 
 .hostContainer {
@@ -13,23 +8,23 @@
   position: relative;
 }
 
-/* ===== BADGE DE GAME ID (para debugging) ===== */
+/* ===== Badge de Game ID (debugging) ===== */
 .gameIdBadge {
   position: fixed;
   top: 1rem;
   right: 1rem;
-  padding: 0.4rem 0.8rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  font-family: 'Inter', monospace;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.3);
+  padding: 0.35rem 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.2);
   z-index: 50;
   backdrop-filter: blur(8px);
 }
 
-/* ===== PANTALLA DE CARGA ===== */
+/* ===== Pantalla de carga ===== */
 .loadingContainer {
   display: flex;
   flex-direction: column;
@@ -40,26 +35,22 @@
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #00d4ff;
+  width: 44px;
+  height: 44px;
+  border: 2.5px solid rgba(255, 255, 255, 0.07);
+  border-top-color: var(--color-gold);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 .loadingText {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-text-faint);
   animation: pulse 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 1; }
 }

@@ -305,6 +305,20 @@ export default function HostPage() {
   // ──────────────────────────────────────────────────────────────────────────
 
   // Botones flotantes (Volver y Pantalla Completa)
+  const floatBtnStyle = {
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: 'var(--radius-md)',
+    color: 'var(--color-text-dim)',
+    fontSize: '0.8rem',
+    fontFamily: 'Space Grotesk, sans-serif',
+    fontWeight: 500,
+    padding: '0.45rem 0.9rem',
+    cursor: 'pointer',
+    backdropFilter: 'blur(10px)',
+    transition: 'all 0.2s ease',
+  };
+
   const TopControls = (
     <div style={{
       position: 'fixed',
@@ -314,55 +328,11 @@ export default function HostPage() {
       gap: '0.5rem',
       zIndex: 100,
     }}>
-      <button
-        onClick={() => router.push('/')}
-        style={{
-          background: 'rgba(255,255,255,0.08)',
-          border: '1px solid rgba(255,255,255,0.15)',
-          borderRadius: '10px',
-          color: 'rgba(255,255,255,0.6)',
-          fontSize: '0.9rem',
-          padding: '0.5rem 1rem',
-          cursor: 'pointer',
-          fontFamily: 'Inter, sans-serif',
-          backdropFilter: 'blur(8px)',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseOver={e => {
-          e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-          e.currentTarget.style.color = '#fff';
-        }}
-        onMouseOut={e => {
-          e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-          e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
-        }}
-      >
-        Volver al Inicio
+      <button onClick={() => router.push('/')} style={floatBtnStyle}>
+        ← Inicio
       </button>
-      <button
-        onClick={toggleFullScreen}
-        style={{
-          background: 'rgba(255,255,255,0.08)',
-          border: '1px solid rgba(255,255,255,0.15)',
-          borderRadius: '10px',
-          color: 'rgba(255,255,255,0.6)',
-          fontSize: '0.9rem',
-          padding: '0.5rem 1rem',
-          cursor: 'pointer',
-          fontFamily: 'Inter, sans-serif',
-          backdropFilter: 'blur(8px)',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseOver={e => {
-          e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-          e.currentTarget.style.color = '#fff';
-        }}
-        onMouseOut={e => {
-          e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-          e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
-        }}
-      >
-        🖥️ Pantalla Completa
+      <button onClick={toggleFullScreen} style={floatBtnStyle}>
+        Pantalla completa
       </button>
     </div>
   );
@@ -383,15 +353,15 @@ export default function HostPage() {
     return (
       <div className={styles.loadingContainer}>
         {TopControls}
-        <span style={{ fontSize: '3rem' }}>🎂</span>
-        <p className={styles.loadingText}>¡Bienvenido, Host!</p>
-        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.95rem', marginTop: '-0.5rem' }}>
-          No hay ninguna partida activa. Crea una para que los invitados puedan entrar.
+        <span style={{ fontSize: '3.5rem', filter: 'drop-shadow(0 0 18px rgba(245,166,35,0.4))' }}>🎂</span>
+        <p className={styles.loadingText} style={{ fontSize: '1.15rem', color: 'var(--color-text-dim)' }}>Bienvenido, Host</p>
+        <p style={{ color: 'var(--color-text-faint)', fontSize: '0.9rem', marginTop: '-0.5rem', textAlign: 'center', maxWidth: '320px', lineHeight: 1.6 }}>
+          No hay ninguna partida activa. Crea una para que los invitados puedan unirse.
         </p>
 
         {createError && (
-          <p style={{ color: '#ff6b6b', fontSize: '0.9rem', marginTop: '0.5rem', maxWidth: '320px', textAlign: 'center' }}>
-            ⚠️ {createError}
+          <p style={{ color: 'var(--color-error)', fontSize: '0.88rem', marginTop: '0.5rem', maxWidth: '320px', textAlign: 'center', background: 'rgba(255,107,107,0.08)', padding: '0.6rem 1rem', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,107,107,0.2)' }}>
+            {createError}
           </p>
         )}
 
@@ -400,21 +370,23 @@ export default function HostPage() {
           style={{
             marginTop: '1.5rem',
             padding: '1rem 2.5rem',
-            fontSize: '1.2rem',
-            fontFamily: 'Outfit, sans-serif',
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #00d4ff, #3498db)',
-            color: '#fff',
+            fontSize: '1rem',
+            fontFamily: 'Syne, sans-serif',
+            fontWeight: 800,
+            background: 'var(--color-gold)',
+            color: '#0a0a0a',
             border: 'none',
-            borderRadius: '14px',
+            borderRadius: 'var(--radius-md)',
             cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(0,212,255,0.3)',
-            transition: 'transform 0.2s ease',
+            boxShadow: '0 4px 22px rgba(245,166,35,0.4)',
+            transition: 'transform 0.22s ease, box-shadow 0.22s ease',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
           }}
-          onMouseOver={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-          onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+          onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 10px 36px rgba(245,166,35,0.55)'; }}
+          onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 22px rgba(245,166,35,0.4)'; }}
         >
-          🎮 Crear Nueva Partida
+          Crear nueva partida
         </button>
       </div>
     );
@@ -498,65 +470,67 @@ export default function HostPage() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          padding: '2rem',
+          padding: '2.5rem 2rem',
           gap: '1.5rem',
           minHeight: '100vh',
         }}>
-          <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2rem', color: '#f1c40f', textAlign: 'center' }}>
-            💡 Respuestas Correctas
+          <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: '2.2rem', fontWeight: 800, color: 'var(--color-gold)', textAlign: 'center' }}>
+            Respuestas Correctas
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'Inter, sans-serif' }}>
+          <p style={{ color: 'var(--color-text-dim)', fontFamily: 'Space Grotesk, sans-serif', fontSize: '0.9rem' }}>
             Trivia de Cumpleaños de Juan
           </p>
-          <div style={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {questions.filter(q => q.type === 'multiple').map((q, idx) => (
+          <div style={{ width: '100%', maxWidth: '820px', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+            {questions.filter(q => q.type === 'multiple').map((q) => (
               <div key={q.id} style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '14px',
-                padding: '1.2rem 1.5rem',
+                background: 'var(--color-bg-card)',
+                border: '1px solid var(--glass-border-2)',
+                borderRadius: 'var(--radius-md)',
+                padding: '1.1rem 1.4rem',
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '1.2rem',
               }}>
                 <span style={{
-                  fontFamily: 'Outfit, sans-serif',
-                  fontSize: '1.4rem',
+                  fontFamily: 'Syne, sans-serif',
+                  fontSize: '1.1rem',
                   fontWeight: 800,
-                  color: '#00d4ff',
+                  color: 'var(--color-gold)',
                   minWidth: '2rem',
                   textAlign: 'center',
+                  paddingTop: '0.1rem',
                 }}>{q.id}</span>
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', color: 'rgba(255,255,255,0.7)', marginBottom: '0.5rem' }}>{q.text}</p>
+                  <p style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '0.9rem', color: 'var(--color-text-dim)', marginBottom: '0.5rem', lineHeight: 1.5 }}>{q.text}</p>
                   <div style={{
-                    background: 'rgba(0,255,136,0.1)',
-                    border: '1px solid rgba(0,255,136,0.3)',
-                    borderRadius: '8px',
-                    padding: '0.5rem 1rem',
+                    background: 'rgba(6, 214, 160, 0.08)',
+                    border: '1px solid rgba(6, 214, 160, 0.25)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '0.4rem 0.9rem',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.5rem',
                   }}>
-                    <span style={{ color: '#00ff88', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
-                      ✅ {q.correctAnswer} — {q.options[q.correctAnswer]}
+                    <span style={{ color: 'var(--color-success)', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif', fontSize: '0.88rem' }}>
+                      {q.correctAnswer} — {q.options[q.correctAnswer]}
                     </span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
               onClick={() => setShowAnswers(false)}
               style={{
                 padding: '0.75rem 2rem',
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '12px',
-                color: '#fff',
-                fontFamily: 'Outfit, sans-serif',
-                fontSize: '1rem',
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid var(--glass-border-2)',
+                borderRadius: 'var(--radius-md)',
+                color: 'var(--color-text)',
+                fontFamily: 'Space Grotesk, sans-serif',
+                fontSize: '0.9rem',
+                fontWeight: 600,
                 cursor: 'pointer',
               }}
             >
@@ -566,17 +540,17 @@ export default function HostPage() {
               onClick={handleCloseLobby}
               style={{
                 padding: '0.75rem 2rem',
-                background: 'rgba(255, 80, 80, 0.2)',
-                border: '1px solid rgba(255, 80, 80, 0.4)',
-                borderRadius: '12px',
-                color: '#ff6b6b',
-                fontFamily: 'Outfit, sans-serif',
-                fontSize: '1rem',
+                background: 'rgba(255, 107, 107, 0.1)',
+                border: '1px solid rgba(255, 107, 107, 0.25)',
+                borderRadius: 'var(--radius-md)',
+                color: 'var(--color-error)',
+                fontFamily: 'Space Grotesk, sans-serif',
+                fontSize: '0.9rem',
                 fontWeight: 600,
                 cursor: 'pointer',
               }}
             >
-              ❌ Terminar Partida y Cerrar Sesión
+              Terminar Partida
             </button>
           </div>
         </div>

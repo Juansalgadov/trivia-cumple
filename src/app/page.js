@@ -1,149 +1,240 @@
-// ============================================================================
-// page.js — Puerta de Entrada Principal
-// ============================================================================
-//
-// Primera pantalla que ven todos al escanear el QR.
-// Solo pregunta si eres Host o Jugador.
-// - Host → pide contraseña → panel de control
-// - Jugador → va directo a escribir su nombre
-// ============================================================================
+'use client';
 
-'use client'; // Esto indica que el archivo funciona directamente en el navegador del usuario
-
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
-// Contraseña para que solo tú puedas controlar la pantalla grande
 const HOST_PASSWORD = 'yeye123?';
 
+/* ─── Canvas de particulas ─── */
+function ParticleCanvas() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const resize = () => {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const PARTICLE_COUNT = 80;
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => {
+      const gold = Math.random() > 0.42;
+      return {
+        x:       Math.random() * window.innerWidth,
+        y:       Math.random() * window.innerHeight,
+        r:       Math.random() * 2.4 + 0.4,
+        vx:      (Math.random() - 0.5) * 0.28,
+        vy:      (Math.random() - 0.5) * 0.24,
+        gold,
+        opacity: Math.random() * 0.45 + 0.1,
+        pulse:   Math.random() * Math.PI * 2,
+      };
+    });
+
+    let animId;
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.pulse += 0.016;
+        if (p.x < -5) p.x = canvas.width + 5;
+        if (p.x > canvas.width + 5) p.x = -5;
+        if (p.y < -5) p.y = canvas.height + 5;
+        if (p.y > canvas.height + 5) p.y = -5;
+        const alpha = p.opacity * (0.65 + 0.35 * Math.sin(p.pulse));
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.gold
+          ? `rgba(245,166,35,${alpha})`
+          : `rgba(0,212,255,${alpha * 0.65})`;
+        ctx.fill();
+      });
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className={styles.particleCanvas} aria-hidden="true" />;
+}
+
+/* ─── Pagina principal ─── */
 export default function GatewayPage() {
-  // ══════════════════════════════════════════════════════════════════════════
-  // ESTADO DE LA PANTALLA
-  // ══════════════════════════════════════════════════════════════════════════
-  // Guardamos en memoria qué pantalla estamos mostrando actualmente.
-
-  const [screen, setScreen] = useState('choose');
-  // 'choose'   → botones de selección
-  // 'host_auth' → pantalla de contraseña
-
+  const [screen, setScreen]     = useState('choose');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError]       = useState(null);
+  const [mounted, setMounted]   = useState(false);
+  const router = useRouter();
 
-  const router = useRouter(); // Herramienta para navegar entre páginas
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(t);
+  }, []);
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // ACCIONES DE LOS BOTONES
-  // ══════════════════════════════════════════════════════════════════════════
-
-  // Cuando tocan el botón "Soy el Host"
   const handleHostSelect = () => {
-    setScreen('host_auth');  // Cambiamos a la pantalla de la contraseña
+    setScreen('host_auth');
     setError(null);
     setPassword('');
   };
 
-  // Cuando el presentador escribe la contraseña y da click a "Ingresar"
   const handleHostLogin = (e) => {
-    e.preventDefault(); // Evita que la página web recargue la pantalla
-
+    e.preventDefault();
     if (password === HOST_PASSWORD) {
-      // Contraseña correcta -> lo mandamos a su panel de control
       router.push('/host');
     } else {
-      // Contraseña incorrecta -> le mostramos un mensaje de error
-      setError('🚫 Acceso denegado. Contraseña incorrecta.');
+      setError('Contraseña incorrecta. Intenta de nuevo.');
     }
   };
 
-  // Cuando tocan el botón "Soy Jugador" → ir directo a escribir el nombre
   const handlePlayerSelect = () => {
     router.push('/join');
   };
 
-  // Botón genérico para volver atrás en cualquier pantalla
-  const handleBack = () => {
-    setScreen('choose');
-    setError(null);
-    setPassword('');
-  };
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // DISEÑO VISUAL
-  // ══════════════════════════════════════════════════════════════════════════
-
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        
-        {/* Título y dibujo que se ven siempre en la parte de arriba */}
-        <div className={styles.heroSection}>
-          <span className={styles.emoji}>🎂</span>
-          <h1 className={styles.title}>Trivia de Cumpleaños</h1>
-          <p className={styles.subtitle}>¿Cuánto conoces a Juan?</p>
+    <div className={`${styles.page} ${mounted ? styles.pageMounted : ''}`}>
+      <ParticleCanvas />
+
+      {/* Orbs atmosfericos de glow */}
+      <div className={styles.orbGold} aria-hidden="true" />
+      <div className={styles.orbCyan} aria-hidden="true" />
+      <div className={styles.orbDeep} aria-hidden="true" />
+
+      {/* Barra superior */}
+      <header className={styles.topBar}>
+        <div className={styles.topBarBrand}>
+          <span className={styles.topBarPulse} aria-hidden="true" />
+          <span className={styles.topBarLabel}>Fiesta Interactiva</span>
         </div>
+        <span className={styles.topBarYear}>2025</span>
+      </header>
 
-        {/* --- PANTALLA 1: Botones Iniciales --- */}
-        {screen === 'choose' && (
-          <div className={styles.buttonGroup}>
-            <button
-              className={styles.hostButton}
-              onClick={handleHostSelect}
-            >
-              <span className={styles.buttonIcon}>🖥️</span>
-              <span className={styles.buttonLabel}>Soy el Host</span>
-              <span className={styles.buttonDesc}>Controlar el juego desde la TV</span>
-            </button>
+      {/* ── Pantalla: Seleccion de rol ── */}
+      {screen === 'choose' && (
+        <main className={styles.main}>
 
-            <button
-              className={styles.joinButton}
-              onClick={handlePlayerSelect}
-            >
-              <span className={styles.buttonIcon}>📱</span>
-              <span className={styles.buttonLabel}>Soy Jugador</span>
-              <span className={styles.buttonDesc}>Unirme desde mi celular</span>
-            </button>
-          </div>
-        )}
+          {/* Columna izquierda: hero texto */}
+          <div className={styles.heroCol}>
+            <p className={styles.eyebrow}>
+              <span className={styles.eyebrowLine} aria-hidden="true" />
+              Trivia en tiempo real
+            </p>
 
-        {/* --- PANTALLA 2: Contraseña Oculta --- */}
-        {screen === 'host_auth' && (
-          <>
-            <button
-              onClick={() => setScreen('choose')}
-              style={{
-                position: 'fixed',
-                top: '1rem',
-                left: '1rem',
-                background: 'rgba(255,255,255,0.08)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                borderRadius: '10px',
-                color: 'rgba(255,255,255,0.6)',
-                fontSize: '0.9rem',
-                padding: '0.5rem 1rem',
-                cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif',
-                zIndex: 100,
-                backdropFilter: 'blur(8px)',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseOver={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-                e.currentTarget.style.color = '#fff';
-              }}
-              onMouseOut={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
-              }}
-            >
-              Volver
-            </button>
-            <div className={styles.authCard}>
-              <div className={styles.authHeader}>
-                <span className={styles.lockIcon}>🔒</span>
-                <h2 className={styles.authTitle}>Acceso de Host</h2>
-              <p className={styles.authDesc}>Ingresa la contraseña para controlar el juego</p>
+            <h1 className={styles.heroTitle}>
+              <span className={styles.line1}>¿Cuánto</span>
+              <span className={styles.line2}>conoces</span>
+              <span className={styles.line3}>a <em>Juan</em>?</span>
+            </h1>
+
+            <p className={styles.heroSub}>
+              Responde desde tu celular y compite en vivo con todos los invitados.
+            </p>
+
+            <div className={styles.statRow}>
+              <div className={styles.stat}>
+                <span className={styles.statVal}>14</span>
+                <span className={styles.statKey}>preguntas</span>
+              </div>
+              <span className={styles.statSep} aria-hidden="true" />
+              <div className={styles.stat}>
+                <span className={styles.statVal}>∞</span>
+                <span className={styles.statKey}>jugadores</span>
+              </div>
+              <span className={styles.statSep} aria-hidden="true" />
+              <div className={styles.stat}>
+                <span className={styles.statVal}>1</span>
+                <span className={styles.statKey}>ganador</span>
+              </div>
             </div>
+          </div>
+
+          {/* Columna derecha: cards de rol */}
+          <div className={styles.rolesCol}>
+
+            <button
+              className={`${styles.roleCard} ${styles.hostCard}`}
+              onClick={handleHostSelect}
+              aria-label="Acceder como Host"
+            >
+              <div className={styles.cardGlowFill} aria-hidden="true" />
+              <div className={styles.cardTop}>
+                <span className={styles.cardNum}>01</span>
+                <div className={styles.cardIconWrap} aria-hidden="true">
+                  {/* Monitor / TV icon */}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 21h8M12 17v4"/>
+                  </svg>
+                </div>
+              </div>
+              <h2 className={styles.cardTitle}>Soy el Host</h2>
+              <p className={styles.cardDesc}>
+                Controla el juego desde la TV — lanza preguntas y revela el ranking.
+              </p>
+              <div className={styles.cardCta}>
+                <span>Ingresar</span>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </button>
+
+            <button
+              className={`${styles.roleCard} ${styles.joinCard}`}
+              onClick={handlePlayerSelect}
+              aria-label="Unirse como jugador"
+            >
+              <div className={styles.cardGlowFill} aria-hidden="true" />
+              <div className={styles.cardTop}>
+                <span className={styles.cardNum}>02</span>
+                <div className={styles.cardIconWrap} aria-hidden="true">
+                  {/* Smartphone icon */}
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2"/>
+                    <path d="M12 18h.01"/>
+                  </svg>
+                </div>
+              </div>
+              <h2 className={styles.cardTitle}>Soy Jugador</h2>
+              <p className={styles.cardDesc}>
+                {'Únete desde tu celular — ingresa tu nombre y responde en tiempo real.'}
+              </p>
+              <div className={styles.cardCta}>
+                <span>Unirme</span>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </button>
+
+          </div>
+        </main>
+      )}
+
+      {/* ── Pantalla: Auth del host ── */}
+      {screen === 'host_auth' && (
+        <div className={styles.authOverlay}>
+          <button
+            className={styles.backButtonFloat}
+            onClick={() => { setScreen('choose'); setError(null); setPassword(''); }}
+          >
+            ← Volver
+          </button>
+
+          <div className={styles.authCard}>
+            <div className={styles.lockIconWrap} aria-hidden="true">🔒</div>
+            <h2 className={styles.authTitle}>Acceso de Host</h2>
+            <p className={styles.authDesc}>Ingresa la contraseña para controlar el juego desde la TV</p>
 
             <form onSubmit={handleHostLogin} className={styles.authForm}>
               <input
@@ -151,18 +242,14 @@ export default function GatewayPage() {
                 className={`${styles.passwordInput} ${error ? styles.inputError : ''}`}
                 placeholder="Contraseña..."
                 value={password}
-                onChange={(e) => {
-                  // Cada vez que se escribe una letra, actualiza la memoria secreta
-                  setPassword(e.target.value);
-                  setError(null); // Quita la advertencia roja al intentar de nuevo
-                }}
+                onChange={(e) => { setPassword(e.target.value); setError(null); }}
                 autoFocus
                 autoComplete="off"
               />
 
               {error && (
-                <div className={styles.errorBanner}>
-                  <span>{error}</span>
+                <div className={styles.errorBanner} role="alert">
+                  {error}
                 </div>
               )}
 
@@ -171,14 +258,12 @@ export default function GatewayPage() {
                 className={styles.submitButton}
                 disabled={!password.trim()}
               >
-                🔓 INGRESAR
+                Ingresar al panel
               </button>
             </form>
           </div>
-          </>
-        )}
-
-      </main>
+        </div>
+      )}
     </div>
   );
 }

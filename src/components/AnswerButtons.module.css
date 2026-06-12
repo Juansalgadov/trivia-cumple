@@ -1,39 +1,46 @@
+/* ============================================================================
+ * AnswerButtons.module.css — Vista Móvil del Jugador (Botones de Respuesta)
+ * ============================================================================ */
+
 .buttonsContainer {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
-  padding: 1.5rem;
-  gap: 1.5rem;
+  padding: 1.2rem;
+  gap: 1rem;
 }
 
+/* Info de la pregunta */
 .questionInfo {
   text-align: center;
-  padding: 1rem;
+  padding: 0.5rem 0.5rem 0;
 }
 
 .questionNumber {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.9rem;
-  color: #00d4ff;
-  font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-gold);
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 0.15em;
+  display: block;
+  margin-bottom: 0.4rem;
 }
 
 .questionText {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #ffffff;
-  margin-top: 0.5rem;
-  line-height: 1.4;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.35;
 }
 
+/* ===== Grid 2x2 de botones ===== */
 .buttonsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
+  gap: 0.7rem;
   flex: 1;
 }
 
@@ -42,21 +49,38 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1.5rem 1rem;
-  background: linear-gradient(135deg, var(--btn-color), color-mix(in srgb, var(--btn-color) 60%, #000));
-  border: none;
-  border-radius: 16px;
+  gap: 0.45rem;
+  padding: 1.2rem 0.8rem;
+  background: color-mix(in srgb, var(--btn-color) 22%, rgba(0,0,0,0.4));
+  border: 1.5px solid color-mix(in srgb, var(--btn-color) 40%, transparent);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  min-height: 120px;
+  transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), box-shadow 0.15s ease;
+  min-height: 110px;
+  position: relative;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  overflow: hidden;
+}
+
+/* Brillo en hover */
+.answerButton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: inherit;
+}
+
+.answerButton:hover::after {
+  opacity: 1;
 }
 
 .answerButton:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+  transform: scale(1.04);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--btn-color) 30%, transparent);
 }
 
 .answerButton:active {
@@ -64,27 +88,93 @@
 }
 
 .answerButton:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
+  transform: none;
 }
 
 .buttonLetter {
-  font-family: 'Outfit', sans-serif;
-  font-size: 2rem;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
   font-weight: 800;
   color: rgba(255, 255, 255, 0.95);
+  line-height: 1;
 }
 
 .buttonText {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.88);
   font-weight: 500;
   text-align: center;
   line-height: 1.3;
 }
 
-/* Estado: Ya respondió */
+/* ===== Estado seleccionado ===== */
+.selectedButton {
+  box-shadow:
+    0 0 0 2.5px rgba(255, 255, 255, 0.85),
+    0 6px 28px color-mix(in srgb, var(--btn-color) 40%, transparent);
+  transform: scale(1.03);
+}
+
+.selectedBadge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+
+/* ===== Controles post-seleccion ===== */
+.cancelButton {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--glass-border-2);
+  border-radius: var(--radius-md);
+  color: var(--color-text-dim);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cancelButton:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-text);
+}
+
+.cancelButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.selectedInfo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  color: var(--color-text-faint);
+  text-align: center;
+  padding: 0 1rem;
+  line-height: 1.5;
+}
+
+.selectedInfo strong {
+  color: var(--color-text-dim);
+}
+
+/* ===== Estado: ya respondio ===== */
 .answeredContainer {
   display: flex;
   flex-direction: column;
@@ -92,127 +182,62 @@
   justify-content: center;
   min-height: 100vh;
   min-height: 100dvh;
-  gap: 1rem;
+  gap: 0.9rem;
   padding: 2rem;
+  text-align: center;
 }
 
 .answeredIcon {
-  font-size: 4rem;
-  animation: bounceIn 0.6s ease;
-}
-
-@keyframes bounceIn {
-  0% { transform: scale(0); }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1); }
+  font-size: 3.5rem;
+  animation: scaleIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+  filter: drop-shadow(0 0 16px rgba(6, 214, 160, 0.5));
 }
 
 .answeredTitle {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #00ff88;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-success);
 }
 
 .answeredText {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  color: var(--color-text-dim);
+  line-height: 1.5;
 }
 
 .answeredText strong {
-  color: #00d4ff;
+  color: var(--color-gold);
 }
 
 .waitingText {
-  font-family: 'Inter', sans-serif;
-  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--color-text-faint);
+  font-size: 0.85rem;
   animation: pulse 2s ease-in-out infinite;
+}
+
+/* ===== Boton reintentar ===== */
+.retryButton {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.75rem 2rem;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--glass-border-2);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.retryButton:hover {
+  background: rgba(255,255,255,0.14);
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-/* Botón seleccionado — brilla con un borde blanco */
-.selectedButton {
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.8), 0 6px 25px rgba(0,0,0,0.4);
-  transform: scale(1.04);
-}
-
-/* Badge de checkmark sobre la opción elegida */
-.selectedBadge {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  font-size: 1.1rem;
-  background: rgba(255,255,255,0.25);
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.answerButton {
-  position: relative; /* necesario para el badge absoluto */
-}
-
-/* Botón de cancelar voto */
-.cancelButton {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  align-self: center;
-}
-
-.cancelButton:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.4);
-}
-
-.cancelButton:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Texto informativo debajo del cancelar */
-.selectedInfo {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.35);
-  text-align: center;
-  padding: 0 1rem;
-}
-
-.selectedInfo strong {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* Botón de reintentar */
-.retryButton {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 0.75rem 2rem;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 12px;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.retryButton:hover {
-  background: rgba(255,255,255,0.2);
+  50%       { opacity: 1; }
 }
