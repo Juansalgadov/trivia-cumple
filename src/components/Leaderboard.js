@@ -126,6 +126,8 @@ export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
           // Revelamos de abajo hacia arriba: si hay 14 jugadores, 
           // el index 13 (último) se revela con revealedCount = 1
           const isRevealed = index >= orderedRanking.length - revealedCount;
+          
+          if (!isRevealed) return null;
 
           // La posición real en el ranking (1 = mejor)
           const isPerfect = entry.grade >= 8.0;
@@ -135,12 +137,7 @@ export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
             <div
               key={entry.playerId}
               className={`${styles.rankingRow} ${isPerfect ? styles.perfectRow : ''} ${isTop3 ? styles.topRow : ''}`}
-              style={{ 
-                visibility: isRevealed ? 'visible' : 'hidden',
-                opacity: isRevealed ? 1 : 0,
-                transition: 'opacity 0.5s ease-out',
-                animationDelay: '0s' 
-              }}
+              style={{ animationDelay: '0s' }}
             >
               <div className={styles.position}>
                 {POSITION_EMOJIS[entry.position] || (
