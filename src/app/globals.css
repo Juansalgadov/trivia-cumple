@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ============================================================================
  * globals.css — Design System Global de la Trivia
  * ============================================================================

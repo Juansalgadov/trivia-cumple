@@ -13,9 +13,9 @@ const OPTION_COLORS = {
 
 /**
  * Muestra los 4 botones de respuesta (A, B, C, D) en el celular del jugador.
- * Cuando el jugador toca un botón, guarda su respuesta y muestra confirmación.
+ * El jugador puede cambiar su respuesta o cancelarla mientras la pregunta esté activa.
  */
-export default function AnswerButtons({ question, questionNumber, onAnswer, selectedAnswer }) {
+export default function AnswerButtons({ question, questionNumber, onAnswer, onCancelAnswer, selectedAnswer }) {
   // Guardamos si el jugador ya está enviando la respuesta (para evitar dobles clics)
   const [isSubmitting, setIsSubmitting] = useState(false);
   // Guardamos si hubo un error al intentar enviar (por si falla la conexión)
@@ -25,37 +25,33 @@ export default function AnswerButtons({ question, questionNumber, onAnswer, sele
 
   // Esta función se ejecuta cuando el jugador toca un botón de respuesta
   const handleAnswer = async (letter) => {
-    if (selectedAnswer || isSubmitting) return; // Evitar doble clic si ya respondió
+    if (isSubmitting) return;
     setIsSubmitting(true);
     setSendError(false);
     try {
-      // Intentamos guardar la respuesta en Firebase
       await onAnswer(letter);
     } catch (err) {
-      // Si hay un error de conexión, le avisamos al jugador y desbloqueamos el botón
       console.error('Error al enviar respuesta:', err);
       setSendError(true);
     } finally {
-      // Esto se ejecuta SIEMPRE (haya error o no), para que el botón no quede bloqueado
+      setIsSubmitting(false);
+    }
+  };
+
+  // Cancela el voto actual (vuelve a null en Firebase)
+  const handleCancel = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      if (onCancelAnswer) await onCancelAnswer();
+    } catch (err) {
+      console.error('Error al cancelar voto:', err);
+    } finally {
       setIsSubmitting(false);
     }
   };
 
   const options = Object.entries(question.options);
-
-  // Si ya respondió exitosamente, mostrar pantalla de confirmación
-  if (selectedAnswer) {
-    return (
-      <div className={styles.answeredContainer}>
-        <div className={styles.answeredIcon}>✅</div>
-        <h2 className={styles.answeredTitle}>¡Respuesta enviada!</h2>
-        <p className={styles.answeredText}>
-          Seleccionaste: <strong>{selectedAnswer}</strong>
-        </p>
-        <p className={styles.waitingText}>Esperando al host...</p>
-      </div>
-    );
-  }
 
   // Si hubo error de conexión, mostrar aviso para que intente de nuevo
   if (sendError) {
@@ -82,16 +78,34 @@ export default function AnswerButtons({ question, questionNumber, onAnswer, sele
         {options.map(([letter, text]) => (
           <button
             key={letter}
-            className={styles.answerButton}
+            className={`${styles.answerButton} ${selectedAnswer === letter ? styles.selectedButton : ''}`}
             style={{ '--btn-color': OPTION_COLORS[letter] }}
             onClick={() => handleAnswer(letter)}
             disabled={isSubmitting}
           >
             <span className={styles.buttonLetter}>{letter}</span>
             <span className={styles.buttonText}>{text}</span>
+            {selectedAnswer === letter && <span className={styles.selectedBadge}>✓</span>}
           </button>
         ))}
       </div>
+
+      {/* Botón de cancelar voto — solo visible si ya seleccionó algo */}
+      {selectedAnswer && (
+        <button
+          className={styles.cancelButton}
+          onClick={handleCancel}
+          disabled={isSubmitting}
+        >
+          🔄 Cambiar respuesta
+        </button>
+      )}
+
+      {selectedAnswer && (
+        <p className={styles.selectedInfo}>
+          Seleccionaste: <strong>{selectedAnswer}</strong> — Puedes cambiarla antes de que el host cierre la votación.
+        </p>
+      )}
     </div>
   );
 }

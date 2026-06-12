@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import styles from './ResultsChart.module.css';
 
 // Colores para cada barra del gráfico
@@ -12,10 +13,12 @@ const OPTION_COLORS = {
 
 /**
  * Gráfico de barras que aparece en la TV después de cerrar la votación.
- * Muestra cuántos jugadores eligieron cada opción (A, B, C, D)
- * y resalta cuál era la respuesta correcta.
+ * La respuesta correcta está OCULTA hasta que el host presiona "Revelar Respuesta".
+ * Solo entonces aparece el botón de "Siguiente Pregunta".
  */
 export default function ResultsChart({ question, questionNumber, players, questionIndex, onNext, isLastQuestion }) {
+  const [revealed, setRevealed] = useState(false);
+
   if (!question) return null;
 
   // Contamos cuántos jugadores eligieron cada opción
@@ -41,13 +44,22 @@ export default function ResultsChart({ question, questionNumber, players, questi
         <h2 className={styles.questionText}>{question.text}</h2>
       </div>
 
-      {/* Destacamos la respuesta correcta */}
-      <div className={styles.correctAnswer}>
-        <span className={styles.correctIcon}>✅</span>
-        <span className={styles.correctText}>
-          Respuesta correcta: <strong>{question.correctAnswer}</strong> — {question.options[question.correctAnswer]}
-        </span>
-      </div>
+      {/* Respuesta correcta — oculta hasta que el host la revele */}
+      {revealed ? (
+        <div className={styles.correctAnswer} style={{ animation: 'fadeInDown 0.5s ease' }}>
+          <span className={styles.correctIcon}>✅</span>
+          <span className={styles.correctText}>
+            Respuesta correcta: <strong>{question.correctAnswer}</strong> — {question.options[question.correctAnswer]}
+          </span>
+        </div>
+      ) : (
+        <button
+          className={styles.revealButton}
+          onClick={() => setRevealed(true)}
+        >
+          👁️ REVELAR RESPUESTA
+        </button>
+      )}
 
       {/* Barra por cada opción mostrando cuántos la eligieron */}
       <div className={styles.barsContainer}>
@@ -57,8 +69,17 @@ export default function ResultsChart({ question, questionNumber, players, questi
           const isCorrect = letter === question.correctAnswer;
           const barWidth = maxCount > 0 ? (count / maxCount) * 100 : 0;
 
+          // Cuando se reveló la respuesta: la correcta brilla, las incorrectas se atenúan
+          const rowStyle = revealed
+            ? { opacity: isCorrect ? 1 : 0.35, transform: isCorrect ? 'scale(1.02)' : 'none', transition: 'all 0.4s ease' }
+            : { transition: 'all 0.4s ease' };
+
           return (
-            <div key={letter} className={`${styles.barRow} ${isCorrect ? styles.correctRow : ''}`}>
+            <div
+              key={letter}
+              className={`${styles.barRow} ${revealed && isCorrect ? styles.correctRow : ''}`}
+              style={rowStyle}
+            >
               <div className={styles.barLabel}>
                 <span
                   className={styles.barLetter}
@@ -85,10 +106,12 @@ export default function ResultsChart({ question, questionNumber, players, questi
         })}
       </div>
 
-      {/* Botón para avanzar a la siguiente pregunta o a la pregunta abierta */}
-      <button className={styles.nextButton} onClick={onNext}>
-        {isLastQuestion ? '🎤 IR A PREGUNTA ABIERTA' : '➡️ SIGUIENTE PREGUNTA'}
-      </button>
+      {/* Botón para avanzar — solo aparece DESPUÉS de revelar */}
+      {revealed && (
+        <button className={styles.nextButton} onClick={onNext} style={{ animation: 'fadeInUp 0.4s ease' }}>
+          {isLastQuestion ? '🎤 IR A PREGUNTA ABIERTA' : '➡️ SIGUIENTE PREGUNTA'}
+        </button>
+      )}
     </div>
   );
 }

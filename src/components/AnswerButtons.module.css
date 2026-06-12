@@ -134,3 +134,85 @@
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
+
+/* Botón seleccionado — brilla con un borde blanco */
+.selectedButton {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.8), 0 6px 25px rgba(0,0,0,0.4);
+  transform: scale(1.04);
+}
+
+/* Badge de checkmark sobre la opción elegida */
+.selectedBadge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 1.1rem;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.answerButton {
+  position: relative; /* necesario para el badge absoluto */
+}
+
+/* Botón de cancelar voto */
+.cancelButton {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: center;
+}
+
+.cancelButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.cancelButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Texto informativo debajo del cancelar */
+.selectedInfo {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.selectedInfo strong {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Botón de reintentar */
+.retryButton {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.retryButton:hover {
+  background: rgba(255,255,255,0.2);
+}

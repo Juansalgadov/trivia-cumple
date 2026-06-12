@@ -234,6 +234,11 @@ export default function HostPage() {
     if (!confirmed) return;
     try {
       await closeLobby(gameId);
+      // ✅ Fix: desmontar suscriptores activos ANTES de limpiar el estado
+      // para evitar que reciban updates de una partida ya cerrada y dupliquen datos
+      if (unsubsRef.current.game) { unsubsRef.current.game(); unsubsRef.current.game = null; }
+      if (unsubsRef.current.players) { unsubsRef.current.players(); unsubsRef.current.players = null; }
+      if (unsubsRef.current.open) { unsubsRef.current.open(); unsubsRef.current.open = null; }
       // Reiniciamos el estado local para que el host vea la pantalla de crear partida
       setGameId(null);
       setGameState(null);
@@ -266,11 +271,10 @@ export default function HostPage() {
   // Lista ordenada de jugadores con sus notas (para el ranking final)
   const ranking = generateRanking(players, questions);
 
-  // URL que verán los jugadores — viene del .env.local o de la ventana del navegador
-  const appUrl = typeof window !== 'undefined'
-    ? process.env.NEXT_PUBLIC_APP_URL || window.location.origin
-    : '';
-  const joinUrl = `${appUrl}`;
+  // URL que verán los jugadores — siempre usa window.location.origin para ser correcta en cualquier entorno
+  const joinUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/join`
+    : '/join';
 
   // ==========================================================================
   // QUÉ PANTALLA MOSTRAR

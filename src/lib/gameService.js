@@ -120,6 +120,16 @@ export async function submitAnswer(gameId, playerId, questionIndex, answer) {
 }
 
 /**
+ * Cancela el voto de un jugador borrando su respuesta para la pregunta actual.
+ * Permite que el jugador vuelva a votar mientras la pregunta esté abierta.
+ */
+export async function cancelAnswer(gameId, playerId, questionIndex) {
+  const { remove } = await import('firebase/database');
+  const answerRef = ref(database, `games/${gameId}/players/${playerId}/answers/${String(questionIndex)}`);
+  await remove(answerRef);
+}
+
+/**
  * Guarda el texto libre que escribe un jugador en la pregunta final.
  * Por defecto, este texto se guarda como "oculto" (censurado) para
  * que el presentador lo revele después.
@@ -243,7 +253,9 @@ export function onOpenAnswersChanged(gameId, callback) {
 }
 
 /**
- * Busca cuál fue la última partida creada para conectar a los nuevos jugadores a esa.
+ * Busca cuál fue la última partida activa para conectar a los nuevos jugadores.
+ * SOLO LEE — no borra nada para evitar que cualquier visita altere datos.
+ * La limpieza de partidas viejas la hace únicamente el host al cerrar el lobby.
  */
 export async function getActiveGameId() {
   if (!database) return null;
@@ -254,23 +266,21 @@ export async function getActiveGameId() {
   if (!snapshot.exists()) return null;
 
   const games = snapshot.val();
-  const { remove } = await import('firebase/database');
   let latestGameId = null;
   let latestTimestamp = 0;
 
-  // Partidas de más de 8 horas se consideran abandonadas y se eliminan directamente.
+  // Ignorar partidas terminadas, cerradas o con más de 8 horas de antigüedad
   const MAX_AGE_MS = 8 * 60 * 60 * 1000;
   const cutoff = Date.now() - MAX_AGE_MS;
 
   for (const [id, game] of Object.entries(games)) {
-    // Eliminar partidas terminadas, cerradas o demasiado viejas
     if (
       game.phase === 'final' ||
       game.phase === 'closed' ||
+      !game.createdAt ||
       game.createdAt < cutoff
     ) {
-      await remove(ref(database, `games/${id}`));
-      continue;
+      continue; // Ignorar, pero NO borrar desde el cliente
     }
 
     if (game.createdAt > latestTimestamp) {

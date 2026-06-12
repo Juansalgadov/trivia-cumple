@@ -13,19 +13,31 @@ import styles from './OpenQuestion.module.css';
 export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBonus, onRemoveBonus, onFinish }) {
   // Guardamos la contraseña que el host va escribiendo para cada jugador por separado
   const [passwords, setPasswords] = useState({});
+  // Guardamos errores de contraseña por jugador
+  const [passwordErrors, setPasswordErrors] = useState({});
 
   // Contraseña secreta para poder revelar respuestas — solo la sabe el host
-  const MASTER_PASSWORD = 'juan27';
+  const MASTER_PASSWORD = 'yeye123?';
 
   // Actualiza la contraseña escrita para un jugador específico
   const handlePasswordChange = (playerId, value) => {
     setPasswords((prev) => ({ ...prev, [playerId]: value }));
+    // Limpiar el error mientras escribe
+    if (passwordErrors[playerId]) {
+      setPasswordErrors((prev) => ({ ...prev, [playerId]: false }));
+    }
   };
 
   // Compara la contraseña ingresada con la secreta y revela si es correcta
   const handleReveal = (playerId) => {
     if (passwords[playerId] === MASTER_PASSWORD) {
+      setPasswordErrors((prev) => ({ ...prev, [playerId]: false }));
       onReveal(playerId);
+    } else {
+      // Contraseña incorrecta — mostrar error en esa tarjeta
+      setPasswordErrors((prev) => ({ ...prev, [playerId]: true }));
+      // Limpiar el campo para que vuelva a escribir
+      setPasswords((prev) => ({ ...prev, [playerId]: '' }));
     }
   };
 
@@ -45,6 +57,7 @@ export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBo
           const isRevealed = openAnswer && openAnswer.revealed;
           const bonusAwarded = openAnswer && openAnswer.bonusAwarded;
           const hasSubmitted = !!openAnswer;
+          const hasError = passwordErrors[playerId];
 
           return (
             <div key={playerId} className={styles.answerCard}>
@@ -87,8 +100,8 @@ export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBo
                   <div className={styles.revealControls}>
                     <input
                       type="password"
-                      className={styles.passwordInput}
-                      placeholder="Contraseña..."
+                      className={`${styles.passwordInput} ${hasError ? styles.passwordInputError : ''}`}
+                      placeholder={hasError ? '❌ Contraseña incorrecta...' : 'Contraseña...'}
                       value={passwords[playerId] || ''}
                       onChange={(e) => handlePasswordChange(playerId, e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleReveal(playerId)}
@@ -100,6 +113,11 @@ export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBo
                       👁️ Revelar
                     </button>
                   </div>
+                  {hasError && (
+                    <p style={{ color: '#ff6b6b', fontSize: '0.8rem', marginTop: '0.4rem', textAlign: 'center' }}>
+                      Contraseña incorrecta. Inténtalo de nuevo.
+                    </p>
+                  )}
                 </div>
               )}
             </div>

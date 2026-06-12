@@ -8,6 +8,7 @@ import {
   getActiveGameId,
   joinGame,
   submitAnswer,
+  cancelAnswer,
   submitOpenAnswer,
   onGameStateChanged,
   onPlayersChanged,
@@ -143,6 +144,7 @@ export default function JoinPage() {
       // Si el host cerró el lobby mientras estábamos dentro, mostramos aviso
       if (state && state.phase === 'closed') {
         clearInterval(pollRef.current);
+        pollRef.current = null; // ✅ Fix: resetear la ref para que el polling pueda reiniciarse si vuelve a la pantalla inicial
         setScreen('lobby_closed');
       }
     });
@@ -166,12 +168,22 @@ export default function JoinPage() {
   }, []);
 
   // Detectar si el host nos sacó del lobby:
-  // Si ya cargamos la lista (playersLoaded) y nuestro playerId no está, fuimos expulsados
+  // Fix race condition: solo marcar 'kicked' si ya han pasado al menos 2s desde que nos unimos.
+  // Esto evita que un snapshot lento de players llegue antes que el nuestro y nos marque como expulsados por error.
+  const joinedAtRef = useRef(null);
+  useEffect(() => {
+    if (screen === 'playing' && !joinedAtRef.current) {
+      joinedAtRef.current = Date.now();
+    }
+  }, [screen]);
+
   useEffect(() => {
     if (screen === 'playing' && playerId && playersLoaded) {
-      // Si players es null (vacío) o no incluye nuestro ID
+      const elapsed = joinedAtRef.current ? Date.now() - joinedAtRef.current : 0;
+      if (elapsed < 2000) return; // Esperar al menos 2s antes de verificar kick
       if (!players || !players[playerId]) {
         clearInterval(pollRef.current);
+        pollRef.current = null; // ✅ Fix: resetear ref
         setScreen('kicked');
       }
     }
@@ -186,6 +198,17 @@ export default function JoinPage() {
       await submitAnswer(gameId, playerId, gameState.currentQuestion, letter);
     } catch (err) {
       console.error('Error enviando respuesta:', err);
+      setError('No se pudo enviar tu respuesta. Inténtalo de nuevo.'); // ✅ Fix: mostrar error en pantalla
+    }
+  }, [gameId, playerId, gameState]);
+
+  // Cancela el voto actual del jugador para la pregunta en curso
+  const handleCancelAnswer = useCallback(async () => {
+    if (!gameId || !playerId || !gameState) return;
+    try {
+      await cancelAnswer(gameId, playerId, gameState.currentQuestion);
+    } catch (err) {
+      console.error('Error cancelando voto:', err);
     }
   }, [gameId, playerId, gameState]);
 
@@ -456,29 +479,29 @@ export default function JoinPage() {
           question={currentQuestion}
           questionNumber={currentQuestionIndex + 1}
           onAnswer={handleAnswer}
+          onCancelAnswer={handleCancelAnswer}
           selectedAnswer={selectedAnswer}
         />
       </>
     );
   }
 
-  // Resultados (esperando que el host avance)
+  // Resultados (esperando que el host avance) — MODO SUSPENSO: no revelar si fue correcto
   if (phase === 'results') {
-    const wasCorrect = selectedAnswer === currentQuestion?.correctAnswer;
     return (
       <div className={styles.waitingContainer}>
         {BackButton}
         <div className={styles.waitingCard}>
-          <div className={styles.waitingIcon}>{wasCorrect ? '🎉' : '😅'}</div>
-          <h2 className={styles.waitingTitle}>
-            {wasCorrect ? '¡Correcto!' : 'Incorrecto'}
-          </h2>
+          <div className={styles.waitingIcon}>⏳</div>
+          <h2 className={styles.waitingTitle}>Tiempo terminado</h2>
           <p className={styles.waitingText}>
-            {wasCorrect
-              ? '¡Excelente! Sumaste 1 punto.'
-              : `La respuesta correcta era: ${currentQuestion?.correctAnswer} — "${currentQuestion?.options[currentQuestion?.correctAnswer]}"`}
+            ¡Mira la pantalla del Host para ver la respuesta correcta!
           </p>
-          <p className={styles.waitingSubtext}>Esperando siguiente pregunta...</p>
+          <div className={styles.waitingDots}>
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+          </div>
         </div>
       </div>
     );
