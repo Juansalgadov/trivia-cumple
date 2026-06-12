@@ -291,7 +291,7 @@ export default function JoinPage() {
         e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
       }}
     >
-      Volver
+      🚪 Salir de la sesión
     </button>
   );
 

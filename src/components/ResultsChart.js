@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import styles from './ResultsChart.module.css';
 
 // Colores para cada barra del gráfico
@@ -17,6 +18,17 @@ const OPTION_COLORS = {
  */
 export default function ResultsChart({ question, questionNumber, players, questionIndex, onNext, isLastQuestion }) {
   if (!question) return null;
+
+  // Avanzar rápido con la flecha derecha o Enter
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Enter') {
+        onNext();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onNext]);
 
   // Contamos cuántos jugadores eligieron cada opción
   const counts = { A: 0, B: 0, C: 0, D: 0 };

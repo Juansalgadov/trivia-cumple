@@ -251,6 +251,19 @@ export default function HostPage() {
     }
   }, [gameId]);
 
+  // Alternar pantalla completa
+  const toggleFullScreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error intentando entrar en pantalla completa: ${err.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  }, []);
+
   // ==========================================================================
   // DATOS CALCULADOS A PARTIR DEL ESTADO
   // ==========================================================================
@@ -284,44 +297,74 @@ export default function HostPage() {
   // RENDERIZADO
   // ──────────────────────────────────────────────────────────────────────────
 
-  // Botón de volver reutilizable — aparece en todas las pantallas
-  const BackButton = (
-    <button
-      onClick={() => router.push('/')}
-      style={{
-        position: 'fixed',
-        top: '1rem',
-        left: '1rem',
-        background: 'rgba(255,255,255,0.08)',
-        border: '1px solid rgba(255,255,255,0.15)',
-        borderRadius: '10px',
-        color: 'rgba(255,255,255,0.6)',
-        fontSize: '0.9rem',
-        padding: '0.5rem 1rem',
-        cursor: 'pointer',
-        fontFamily: 'Inter, sans-serif',
-        zIndex: 100,
-        backdropFilter: 'blur(8px)',
-        transition: 'all 0.2s ease',
-      }}
-      onMouseOver={e => {
-        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-        e.currentTarget.style.color = '#fff';
-      }}
-      onMouseOut={e => {
-        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
-      }}
-    >
-      Volver
-    </button>
+  // Botones flotantes (Volver y Pantalla Completa)
+  const TopControls = (
+    <div style={{
+      position: 'fixed',
+      top: '1rem',
+      left: '1rem',
+      display: 'flex',
+      gap: '0.5rem',
+      zIndex: 100,
+    }}>
+      <button
+        onClick={() => router.push('/')}
+        style={{
+          background: 'rgba(255,255,255,0.08)',
+          border: '1px solid rgba(255,255,255,0.15)',
+          borderRadius: '10px',
+          color: 'rgba(255,255,255,0.6)',
+          fontSize: '0.9rem',
+          padding: '0.5rem 1rem',
+          cursor: 'pointer',
+          fontFamily: 'Inter, sans-serif',
+          backdropFilter: 'blur(8px)',
+          transition: 'all 0.2s ease',
+        }}
+        onMouseOver={e => {
+          e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+          e.currentTarget.style.color = '#fff';
+        }}
+        onMouseOut={e => {
+          e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+          e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+        }}
+      >
+        Volver al Inicio
+      </button>
+      <button
+        onClick={toggleFullScreen}
+        style={{
+          background: 'rgba(255,255,255,0.08)',
+          border: '1px solid rgba(255,255,255,0.15)',
+          borderRadius: '10px',
+          color: 'rgba(255,255,255,0.6)',
+          fontSize: '0.9rem',
+          padding: '0.5rem 1rem',
+          cursor: 'pointer',
+          fontFamily: 'Inter, sans-serif',
+          backdropFilter: 'blur(8px)',
+          transition: 'all 0.2s ease',
+        }}
+        onMouseOver={e => {
+          e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+          e.currentTarget.style.color = '#fff';
+        }}
+        onMouseOut={e => {
+          e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+          e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+        }}
+      >
+        🖥️ Pantalla Completa
+      </button>
+    </div>
   );
 
   // Pantalla de carga mientras lee de Firebase
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
-        {BackButton}
+        {TopControls}
         <div className={styles.spinner}></div>
         <p className={styles.loadingText}>Conectando con la sala...</p>
       </div>
@@ -332,7 +375,7 @@ export default function HostPage() {
   if (!gameId) {
     return (
       <div className={styles.loadingContainer}>
-        {BackButton}
+        {TopControls}
         <span style={{ fontSize: '3rem' }}>🎂</span>
         <p className={styles.loadingText}>¡Bienvenido, Host!</p>
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.95rem', marginTop: '-0.5rem' }}>
@@ -372,7 +415,7 @@ export default function HostPage() {
 
   return (
     <div className={styles.hostContainer}>
-      {BackButton}
+      {TopControls}
       {/* Indicador de Game ID para debugging */}
       <div className={styles.gameIdBadge}>
         ID: {gameId ? gameId.slice(-6) : '...'}
@@ -491,22 +534,39 @@ export default function HostPage() {
               </div>
             ))}
           </div>
-          <button
-            onClick={() => setShowAnswers(false)}
-            style={{
-              marginTop: '1rem',
-              padding: '0.75rem 2rem',
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '12px',
-              color: '#fff',
-              fontFamily: 'Outfit, sans-serif',
-              fontSize: '1rem',
-              cursor: 'pointer',
-            }}
-          >
-            ← Volver al Ranking
-          </button>
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            <button
+              onClick={() => setShowAnswers(false)}
+              style={{
+                padding: '0.75rem 2rem',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '12px',
+                color: '#fff',
+                fontFamily: 'Outfit, sans-serif',
+                fontSize: '1rem',
+                cursor: 'pointer',
+              }}
+            >
+              ← Volver al Ranking
+            </button>
+            <button
+              onClick={handleCloseLobby}
+              style={{
+                padding: '0.75rem 2rem',
+                background: 'rgba(255, 80, 80, 0.2)',
+                border: '1px solid rgba(255, 80, 80, 0.4)',
+                borderRadius: '12px',
+                color: '#ff6b6b',
+                fontFamily: 'Outfit, sans-serif',
+                fontSize: '1rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              ❌ Terminar Partida y Cerrar Sesión
+            </button>
+          </div>
         </div>
       )}
     </div>

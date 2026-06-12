@@ -44,6 +44,17 @@ export default function QuestionDisplay({
     return () => clearInterval(interval);
   }, [questionNumber]);
 
+  // Avanzar rápido con la flecha derecha o Enter
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Enter') {
+        onShowResults();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onShowResults]);
+
   if (!question) return null;
 
   const options = Object.entries(question.options);
