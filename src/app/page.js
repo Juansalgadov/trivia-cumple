@@ -136,7 +136,7 @@ export default function GatewayPage() {
               <span className={styles.line1}>¿Cuánto</span>
               <span className={styles.line2}>conoces</span>
               <span className={styles.line3}>
-                a <em>Juan</em><span className={styles.partyIcon}>🎉</span>?
+                a <em>Juan</em>?<span className={styles.partyIcon}>🎉</span>
               </span>
             </h1>
 
