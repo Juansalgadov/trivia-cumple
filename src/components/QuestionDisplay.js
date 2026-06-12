@@ -141,6 +141,7 @@ export default function QuestionDisplay({
                 opacity: isRevealed ? 1 : 0,
                 transform: isRevealed ? 'translateY(0)' : 'translateY(20px)',
                 transition: 'all 0.4s ease-out',
+                animation: isRevealed ? undefined : 'none',
               }}
             >
               <span className={styles.optionLetter}>{letter}</span>
