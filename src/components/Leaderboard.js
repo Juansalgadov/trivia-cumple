@@ -22,11 +22,9 @@ const seededRandom = (seed) => {
  */
 export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
   // El ranking llega ordenado de mayor a menor (pos 1, 2, 3...).
-  // Para el host lo invertimos: peor nota primero, mejor nota al final.
-  const orderedRanking = useMemo(
-    () => (isHost ? [...(ranking || [])].reverse() : (ranking || [])),
-    [isHost, ranking]
-  );
+  // Queremos que el 1er lugar esté arriba y el último abajo.
+  // Pero queremos revelar desde abajo hacia arriba.
+  const orderedRanking = ranking || [];
 
   // Cuántos se han revelado (el host los va desbloqueando de a uno)
   const [revealedCount, setRevealedCount] = useState(0);
@@ -125,7 +123,9 @@ export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
 
       <div className={styles.rankingList}>
         {orderedRanking.map((entry, index) => {
-          if (index >= revealedCount) return null;
+          // Revelamos de abajo hacia arriba: si hay 14 jugadores, 
+          // el index 13 (último) se revela con revealedCount = 1
+          const isRevealed = index >= orderedRanking.length - revealedCount;
 
           // La posición real en el ranking (1 = mejor)
           const isPerfect = entry.grade >= 8.0;
@@ -135,7 +135,12 @@ export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
             <div
               key={entry.playerId}
               className={`${styles.rankingRow} ${isPerfect ? styles.perfectRow : ''} ${isTop3 ? styles.topRow : ''}`}
-              style={{ animationDelay: '0s' }}
+              style={{ 
+                visibility: isRevealed ? 'visible' : 'hidden',
+                opacity: isRevealed ? 1 : 0,
+                transition: 'opacity 0.5s ease-out',
+                animationDelay: '0s' 
+              }}
             >
               <div className={styles.position}>
                 {POSITION_EMOJIS[entry.position] || (
