@@ -10,7 +10,7 @@ import styles from './OpenQuestion.module.css';
  * El host debe escribir una contraseña para revelar cada una.
  * Después de leer la respuesta, puede darle o quitarle el punto extra a ese jugador.
  */
-export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBonus, onRemoveBonus, onFinish }) {
+export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBonus, onRemoveBonus, onFinish, onRemovePlayer }) {
   // Guardamos la contraseña que el host va escribiendo para cada jugador por separado
   const [passwords, setPasswords] = useState({});
   // Guardamos errores de contraseña por jugador
@@ -44,10 +44,17 @@ export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBo
   // Convertimos el mapa de jugadores en una lista para poder recorrerla
   const playerEntries = players ? Object.entries(players) : [];
 
-  // Verificar si YA se asignó el punto a alguien — solo puede haber UN ganador del bonus
   const bonusAlreadyAwarded = openAnswers
     ? Object.values(openAnswers).some((a) => a.bonusAwarded)
     : false;
+
+  const pending = [];
+  const answeredIds = new Set(Object.keys(openAnswers || {}));
+  playerEntries.forEach(([playerId, player]) => {
+    if (!answeredIds.has(playerId)) {
+      pending.push({ id: playerId, nickname: player.nickname });
+    }
+  });
 
   return (
     <div className={styles.openContainer}>
@@ -55,6 +62,61 @@ export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBo
         <span className={styles.questionLabel}>Pregunta 15 — Pregunta Abierta</span>
         <h2 className={styles.questionText}>¿Quién es Juan para ti y por qué lo elegiste como amigo?</h2>
       </div>
+
+      {pending.length > 0 && (
+        <div style={{
+          background: 'rgba(255,165,0,0.1)',
+          border: '1px solid rgba(255,165,0,0.3)',
+          borderRadius: '12px',
+          padding: '1rem',
+          marginBottom: '1rem',
+          width: '100%',
+          maxWidth: '800px',
+        }}>
+          <h3 style={{ color: '#ffa500', fontSize: '1rem', margin: '0 0 0.5rem 0' }}>⏳ Jugadores escribiendo ({pending.length})</h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            {pending.map(p => (
+              <span key={p.id} style={{
+                background: 'rgba(255,255,255,0.1)',
+                padding: '0.3rem 0.8rem',
+                borderRadius: '16px',
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                {p.nickname}
+                {onRemovePlayer && (
+                  <button
+                    onClick={() => {
+                      if (confirm(`¿Expulsar a ${p.nickname} de la sala?`)) {
+                        onRemovePlayer(p.id);
+                      }
+                    }}
+                    style={{
+                      background: 'rgba(255,80,80,0.2)',
+                      border: '1px solid rgba(255,80,80,0.5)',
+                      color: '#ff6b6b',
+                      borderRadius: '50%',
+                      width: '20px',
+                      height: '20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '10px',
+                      padding: 0
+                    }}
+                    title="Expulsar jugador"
+                  >
+                    ❌
+                  </button>
+                )}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className={styles.answersGrid}>
         {playerEntries.map(([playerId, playerData]) => {
@@ -140,9 +202,36 @@ export default function OpenQuestion({ openAnswers, players, onReveal, onAwardBo
         })}
       </div>
 
-      <button className={styles.finishButton} onClick={onFinish}>
-        🏆 VER RANKING FINAL
-      </button>
+      <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+        <button 
+          className={styles.finishButton} 
+          onClick={onFinish}
+          disabled={pending.length > 0}
+          style={{ opacity: pending.length > 0 ? 0.5 : 1, marginTop: 0 }}
+        >
+          {pending.length > 0 ? `Faltan ${pending.length} por escribir` : '🏆 VER RANKING FINAL'}
+        </button>
+        {pending.length > 0 && (
+          <button 
+            onClick={() => {
+              if (confirm('¿Seguro que quieres avanzar? Los que no respondieron se quedarán en blanco.')) {
+                onFinish();
+              }
+            }}
+            style={{
+              padding: '0 1.5rem',
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'rgba(255,255,255,0.6)',
+              borderRadius: '16px',
+              cursor: 'pointer',
+              fontFamily: 'Outfit, sans-serif'
+            }}
+          >
+            Forzar avance
+          </button>
+        )}
+      </div>
     </div>
   );
 }

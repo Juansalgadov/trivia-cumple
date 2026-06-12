@@ -24,6 +24,7 @@ import {
   setCurrentQuestion,
   showResults,
   setPhase,
+  setRevealedOptions,
   revealOpenAnswer,
   awardBonusPoint,
   removeBonusPoint,
@@ -181,6 +182,11 @@ export default function HostPage() {
     await showResults(gameId);
   }, [gameId]);
 
+  const handleRevealOption = useCallback(async (count) => {
+    if (!gameId) return;
+    await setRevealedOptions(gameId, count);
+  }, [gameId]);
+
   // Avanza a la siguiente pregunta. Si ya se acabaron todas, va al ranking final.
   const handleNextQuestion = useCallback(async () => {
     if (!gameId || !gameState) return;
@@ -220,7 +226,8 @@ export default function HostPage() {
   // Saca a un jugador del lobby — le pregunta confirmación antes de borrarlo
   const handleRemovePlayer = useCallback(async (playerId, nickname) => {
     if (!gameId) return;
-    const confirmed = window.confirm(`¿Expulsar a "${nickname}" del lobby?`);
+    const name = nickname || (players && players[playerId]?.nickname) || 'Jugador';
+    const confirmed = window.confirm(`¿Expulsar a "${name}" del lobby?`);
     if (!confirmed) return;
     try {
       await removePlayer(gameId, playerId);
@@ -444,6 +451,9 @@ export default function HostPage() {
           players={players}
           questionIndex={currentQuestionIndex}
           onShowResults={handleShowResults}
+          revealedOptions={gameState?.revealedOptions || 0}
+          onRevealOption={handleRevealOption}
+          onRemovePlayer={handleRemovePlayer}
         />
       )}
 
@@ -468,6 +478,7 @@ export default function HostPage() {
           onAwardBonus={handleAwardBonus}
           onRemoveBonus={handleRemoveBonus}
           onFinish={handleFinish}
+          onRemovePlayer={handleRemovePlayer}
         />
       )}
 

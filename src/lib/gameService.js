@@ -144,6 +144,16 @@ export async function submitOpenAnswer(gameId, playerId, text) {
   });
 }
 
+/**
+ * Permite a un jugador cancelar su respuesta libre en la pregunta 15
+ * para poder reescribirla.
+ */
+export async function cancelOpenAnswer(gameId, playerId) {
+  const { remove } = await import('firebase/database');
+  const openRef = ref(database, `games/${gameId}/openAnswers/${playerId}`);
+  await remove(openRef);
+}
+
 // ============================================================================
 // CONTROLES DEL PRESENTADOR (HOST)
 // ============================================================================
@@ -166,6 +176,18 @@ export async function setCurrentQuestion(gameId, questionIndex) {
     // Si llegamos a la pregunta final, cambiamos a un modo especial
     phase: questionIndex === 14 ? 'open_question' : 'question',
     showResults: false,
+    revealedOptions: 0, // Reiniciamos el contador de opciones reveladas al cambiar de pregunta
+  });
+}
+
+/**
+ * Actualiza cuántas opciones (A, B, C, D) están visibles actualmente.
+ * Se usa para revelar las opciones una por una.
+ */
+export async function setRevealedOptions(gameId, count) {
+  const gameRef = ref(database, `games/${gameId}`);
+  await update(gameRef, {
+    revealedOptions: count
   });
 }
 

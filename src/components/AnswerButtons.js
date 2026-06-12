@@ -15,7 +15,7 @@ const OPTION_COLORS = {
  * Muestra los 4 botones de respuesta (A, B, C, D) en el celular del jugador.
  * El jugador puede cambiar su respuesta o cancelarla mientras la pregunta esté activa.
  */
-export default function AnswerButtons({ question, questionNumber, onAnswer, onCancelAnswer, selectedAnswer }) {
+export default function AnswerButtons({ question, questionNumber, onAnswer, onCancelAnswer, selectedAnswer, revealedOptions }) {
   // Guardamos si el jugador ya está enviando la respuesta (para evitar dobles clics)
   const [isSubmitting, setIsSubmitting] = useState(false);
   // Guardamos si hubo un error al intentar enviar (por si falla la conexión)
@@ -75,19 +75,28 @@ export default function AnswerButtons({ question, questionNumber, onAnswer, onCa
       </div>
 
       <div className={styles.buttonsGrid}>
-        {options.map(([letter, text]) => (
-          <button
-            key={letter}
-            className={`${styles.answerButton} ${selectedAnswer === letter ? styles.selectedButton : ''}`}
-            style={{ '--btn-color': OPTION_COLORS[letter] }}
-            onClick={() => handleAnswer(letter)}
-            disabled={isSubmitting}
-          >
-            <span className={styles.buttonLetter}>{letter}</span>
-            <span className={styles.buttonText}>{text}</span>
-            {selectedAnswer === letter && <span className={styles.selectedBadge}>✓</span>}
-          </button>
-        ))}
+        {options.map(([letter, text], index) => {
+          const isRevealed = index < revealedOptions;
+          return (
+            <button
+              key={letter}
+              className={`${styles.answerButton} ${selectedAnswer === letter ? styles.selectedButton : ''}`}
+              style={{
+                '--btn-color': OPTION_COLORS[letter],
+                opacity: isRevealed ? 1 : 0,
+                pointerEvents: isRevealed ? 'auto' : 'none',
+                transform: isRevealed ? 'scale(1)' : 'scale(0.9)',
+                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+              }}
+              onClick={() => handleAnswer(letter)}
+              disabled={isSubmitting || !isRevealed}
+            >
+              <span className={styles.buttonLetter}>{letter}</span>
+              <span className={styles.buttonText}>{text}</span>
+              {selectedAnswer === letter && <span className={styles.selectedBadge}>✓</span>}
+            </button>
+          );
+        })}
       </div>
 
       {/* Botón de cancelar voto — solo visible si ya seleccionó algo */}

@@ -11,6 +11,7 @@ import {
   submitAnswer,
   cancelAnswer,
   submitOpenAnswer,
+  cancelOpenAnswer,
   onGameStateChanged,
   onPlayersChanged,
 } from '../../lib/gameService';
@@ -242,6 +243,16 @@ export default function JoinPage() {
       console.error('Error enviando respuesta abierta:', err);
     }
   }, [gameId, playerId, openAnswer]);
+
+  const handleCancelOpenAnswer = useCallback(async () => {
+    if (!gameId || !playerId) return;
+    try {
+      await cancelOpenAnswer(gameId, playerId);
+      setOpenSubmitted(false);
+    } catch (err) {
+      console.error('Error cancelando respuesta abierta:', err);
+    }
+  }, [gameId, playerId]);
 
   // ──────────────────────────────────────────────────────────────────────────
   // Datos derivados del estado
@@ -487,10 +498,10 @@ export default function JoinPage() {
     );
   }
 
-  // Preguntas 1-14
-  if (phase === 'question' && currentQuestion?.type === 'multiple') {
+  // Pregunta activa (A, B, C, D)
+  if (phase === 'question') {
     return (
-      <>
+      <div className={styles.playingContainer}>
         {BackButton}
         <AnswerButtons
           question={currentQuestion}
@@ -498,8 +509,9 @@ export default function JoinPage() {
           onAnswer={handleAnswer}
           onCancelAnswer={handleCancelAnswer}
           selectedAnswer={selectedAnswer}
+          revealedOptions={gameState?.revealedOptions || 0}
         />
-      </>
+      </div>
     );
   }
 
@@ -537,6 +549,23 @@ export default function JoinPage() {
             <div className={styles.waitingIcon}>💌</div>
             <h2 className={styles.waitingTitle}>¡Respuesta enviada!</h2>
             <p className={styles.waitingText}>Gracias por tu mensaje. Esperando al host...</p>
+            
+            <button
+              onClick={handleCancelOpenAnswer}
+              style={{
+                marginTop: '1.5rem',
+                padding: '0.6rem 1.2rem',
+                background: 'rgba(255, 80, 80, 0.15)',
+                border: '1px solid rgba(255, 80, 80, 0.3)',
+                borderRadius: '8px',
+                color: '#ff6b6b',
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                fontFamily: 'Inter, sans-serif'
+              }}
+            >
+              ✏️ Cancelar y reescribir
+            </button>
           </div>
         </div>
       );
