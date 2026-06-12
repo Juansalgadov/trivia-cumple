@@ -169,7 +169,13 @@ export default function GatewayPage() {
               <div className={styles.cardGlowFill} aria-hidden="true" />
               <div className={styles.cardTop}>
                 <span className={styles.cardNum}>01</span>
-                <span className={styles.cardEmoji} aria-hidden="true">🖥️</span>
+                <div className={styles.cardIconWrap} aria-hidden="true">
+                  {/* Monitor / TV icon */}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 21h8M12 17v4"/>
+                  </svg>
+                </div>
               </div>
               <h2 className={styles.cardTitle}>Soy el Host</h2>
               <p className={styles.cardDesc}>
@@ -177,8 +183,8 @@ export default function GatewayPage() {
               </p>
               <div className={styles.cardCta}>
                 <span>Ingresar</span>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
             </button>
@@ -191,16 +197,22 @@ export default function GatewayPage() {
               <div className={styles.cardGlowFill} aria-hidden="true" />
               <div className={styles.cardTop}>
                 <span className={styles.cardNum}>02</span>
-                <span className={styles.cardEmoji} aria-hidden="true">📱</span>
+                <div className={styles.cardIconWrap} aria-hidden="true">
+                  {/* Smartphone icon */}
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2"/>
+                    <path d="M12 18h.01"/>
+                  </svg>
+                </div>
               </div>
               <h2 className={styles.cardTitle}>Soy Jugador</h2>
               <p className={styles.cardDesc}>
-                {`Únete desde tu celular — ingresa tu nombre y responde en tiempo real.`}
+                {'Únete desde tu celular — ingresa tu nombre y responde en tiempo real.'}
               </p>
               <div className={styles.cardCta}>
                 <span>Unirme</span>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
             </button>
