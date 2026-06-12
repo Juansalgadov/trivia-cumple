@@ -234,7 +234,7 @@ export default function HostPage() {
     } catch (err) {
       console.error('Error al sacar jugador:', err);
     }
-  }, [gameId]);
+  }, [gameId, players]);
 
   // Cierra el lobby: avisa a todos los jugadores y marca la sala como cerrada
   const handleCloseLobby = useCallback(async () => {
@@ -442,10 +442,11 @@ export default function HostPage() {
 
       {/* FASE 2a: Pregunta activa — Mostrando pregunta y opciones */}
       {phase === 'question' && currentQuestion && currentQuestion.type === 'multiple' && (
-        <QuestionDisplay
-          question={currentQuestion}
-          questionNumber={currentQuestionIndex + 1}
-          totalQuestions={TOTAL_SCORED_QUESTIONS}
+      <QuestionDisplay
+        key={currentQuestionIndex}
+        question={currentQuestion}
+        questionNumber={currentQuestionIndex + 1}
+        totalQuestions={TOTAL_SCORED_QUESTIONS}
           answeredCount={answeredCount}
           totalPlayers={totalPlayers}
           players={players}

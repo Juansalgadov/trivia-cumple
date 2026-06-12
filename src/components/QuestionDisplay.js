@@ -10,46 +10,32 @@ const OPTION_COLORS = {
   D: '#2ecc71',
 };
 
-const OPTION_ICONS = {
-  A: '🔴',
-  B: '🔵',
-  C: '🟡',
-  D: '🟢',
-};
-
 /**
  * Pantalla que muestra la pregunta activa en la TV del Host.
  * Incluye temporizador informativo, las 4 opciones con colores,
  * la lista de quién ya respondió y un contador de respuestas.
  */
-export default function QuestionDisplay({ 
-  question, 
-  questionNumber, 
-  totalQuestions, 
-  answeredCount, 
+export default function QuestionDisplay({
+  question,
+  questionNumber,
+  totalQuestions,
+  answeredCount,
   totalPlayers,
   players,
   questionIndex,
   onShowResults,
   revealedOptions,
   onRevealOption,
-  onRemovePlayer
+  onRemovePlayer,
 }) {
   // Temporizador informativo — solo muestra el tiempo transcurrido desde que apareció la pregunta
   const [elapsed, setElapsed] = useState(0);
-
-  // Reiniciar el timer cada vez que cambia la pregunta
   useEffect(() => {
-    setElapsed(0);
     const interval = setInterval(() => {
       setElapsed((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(interval);
-  }, [questionNumber]);
-
-  if (!question) return null;
-
-  const options = Object.entries(question.options);
+  }, []);
 
   // Construimos listas separadas: quién ya respondió y quién aún no
   const answered = [];
@@ -71,19 +57,21 @@ export default function QuestionDisplay({
       if (e.key === 'ArrowRight' || e.key === 'Enter') {
         if (revealedOptions < 4) {
           onRevealOption(revealedOptions + 1);
+        } else if (pending.length === 0) {
+          onShowResults();
         } else {
-          if (pending.length === 0) {
-            onShowResults();
-          } else {
-            console.log('Faltan jugadores por responder');
-            // Opcional: mostrar un toast o shake effect
-          }
+          console.log('Faltan jugadores por responder');
         }
       }
     };
+
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [onShowResults, revealedOptions, onRevealOption, pending.length]);
+
+  if (!question) return null;
+
+  const options = Object.entries(question.options);
 
   // Formatear el tiempo transcurrido como M:SS
   const minutes = Math.floor(elapsed / 60);
@@ -117,6 +105,28 @@ export default function QuestionDisplay({
         <h2 className={styles.questionText}>{question.text}</h2>
       </div>
 
+      {revealedOptions < 4 && (
+        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+            Presiona <strong>Enter</strong> o <strong>Flecha Derecha</strong> en tu teclado para revelar opciones.
+          </p>
+          <button 
+            onClick={() => onRevealOption(revealedOptions + 1)}
+            style={{
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'white',
+              padding: '0.5rem 1rem',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              fontFamily: 'Outfit, sans-serif'
+            }}
+          >
+            Revelar Siguiente Opción
+          </button>
+        </div>
+      )}
+
       {/* Las 4 opciones de respuesta con sus colores */}
       <div className={styles.optionsGrid}>
         {options.map(([letter, text], index) => {
@@ -130,7 +140,7 @@ export default function QuestionDisplay({
                 animationDelay: `${index * 0.15}s`,
                 opacity: isRevealed ? 1 : 0,
                 transform: isRevealed ? 'translateY(0)' : 'translateY(20px)',
-                transition: 'all 0.4s ease-out'
+                transition: 'all 0.4s ease-out',
               }}
             >
               <span className={styles.optionLetter}>{letter}</span>
@@ -162,7 +172,11 @@ export default function QuestionDisplay({
               {pending.length === 0
                 ? <span className={styles.playerStatusEmpty}>¡Todos respondieron!</span>
                 : pending.map((p) => (
-                    <span key={p.id} className={styles.playerStatusChip + ' ' + styles.chipPending} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span
+                      key={p.id}
+                      className={styles.playerStatusChip + ' ' + styles.chipPending}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    >
                       {p.nickname}
                       {onRemovePlayer && (
                         <button
@@ -183,7 +197,7 @@ export default function QuestionDisplay({
                             justifyContent: 'center',
                             cursor: 'pointer',
                             fontSize: '10px',
-                            padding: 0
+                            padding: 0,
                           }}
                           title="Expulsar jugador"
                         >
@@ -200,20 +214,20 @@ export default function QuestionDisplay({
 
       {/* Botón para cerrar la votación y ver quién respondió qué */}
       <div style={{ display: 'flex', gap: '1rem' }}>
-        <button 
-          className={styles.resultsButton} 
+        <button
+          className={styles.resultsButton}
           onClick={onShowResults}
           disabled={pending.length > 0 || revealedOptions < 4}
           style={{ opacity: pending.length > 0 || revealedOptions < 4 ? 0.5 : 1 }}
         >
-          {revealedOptions < 4 
-            ? 'Revelando opciones...' 
-            : pending.length > 0 
-              ? `Faltan ${pending.length} por responder` 
+          {revealedOptions < 4
+            ? 'Revelando opciones...'
+            : pending.length > 0
+              ? `Faltan ${pending.length} por responder`
               : '📊 CERRAR VOTACIÓN'}
         </button>
         {pending.length > 0 && revealedOptions >= 4 && (
-          <button 
+          <button
             onClick={() => {
               if (confirm('¿Seguro que quieres avanzar? Los que no respondieron se quedarán en blanco.')) {
                 onShowResults();
@@ -226,7 +240,7 @@ export default function QuestionDisplay({
               color: 'rgba(255,255,255,0.6)',
               borderRadius: '16px',
               cursor: 'pointer',
-              fontFamily: 'Outfit, sans-serif'
+              fontFamily: 'Outfit, sans-serif',
             }}
           >
             Forzar avance

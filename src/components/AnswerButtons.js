@@ -74,7 +74,20 @@ export default function AnswerButtons({ question, questionNumber, onAnswer, onCa
         <h2 className={styles.questionText}>{question.text}</h2>
       </div>
 
-      <div className={styles.buttonsGrid}>
+      {revealedOptions === 0 && (
+        <div style={{
+          textAlign: 'center',
+          padding: '2rem',
+          color: 'rgba(255,255,255,0.7)',
+          animation: 'pulse 2s infinite',
+          marginTop: '2rem'
+        }}>
+          <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>👀</p>
+          <p>Esperando a que el presentador revele las opciones...</p>
+        </div>
+      )}
+
+      <div className={styles.buttonsGrid} style={{ display: revealedOptions === 0 ? 'none' : 'grid' }}>
         {options.map(([letter, text], index) => {
           const isRevealed = index < revealedOptions;
           return (

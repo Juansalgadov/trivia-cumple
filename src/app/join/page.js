@@ -37,11 +37,11 @@ export default function JoinPage() {
   // ── Estado del juego en tiempo real ──
   const [gameState, setGameState] = useState(null);
   const [players, setPlayers] = useState(null);
-  const [playersLoaded, setPlayersLoaded] = useState(false);
 
   // ── Pregunta 15 ──
   const [openAnswer, setOpenAnswer] = useState('');
   const [openSubmitted, setOpenSubmitted] = useState(false);
+  const [displayNickname, setDisplayNickname] = useState('');
 
   // ── Pantallas de la UI ──
   // 'name'          → formulario para escribir el nombre
@@ -55,6 +55,8 @@ export default function JoinPage() {
 
   // Guardamos el nombre ingresado para usarlo después de que aparezca el lobby
   const pendingNickname = useRef('');
+  const screenRef = useRef('name');
+  const playerIdRef = useRef(null);
   // Referencia al interval de polling para poder cancelarlo
   const pollRef = useRef(null);
   // Bloqueo anti-doble-click: evita que el jugador se una dos veces
@@ -62,6 +64,15 @@ export default function JoinPage() {
 
   // Bloqueo definitivo para que no haya clones si el intervalo se cruza con un clic
   const isJoiningRef = useRef(false);
+  const joinedAtRef = useRef(null);
+
+  useEffect(() => {
+    screenRef.current = screen;
+  }, [screen]);
+
+  useEffect(() => {
+    playerIdRef.current = playerId;
+  }, [playerId]);
 
   // ──────────────────────────────────────────────────────────────────────────
   // Función principal: intenta encontrar un juego y unirse
@@ -90,10 +101,13 @@ export default function JoinPage() {
         clearInterval(pollRef.current);
         pollRef.current = null;
         setScreen('joining');
+        joinedAtRef.current = null;
 
         const newPlayerId = await joinGame(activeId, nameToUse);
         setGameId(activeId);
         setPlayerId(newPlayerId);
+        setOpenSubmitted(false);
+        joinedAtRef.current = Date.now();
         setScreen('playing');
         return true;
       } else {
@@ -129,6 +143,7 @@ export default function JoinPage() {
 
     setError(null);
     pendingNickname.current = name;
+    setDisplayNickname(name);
 
     const joined = await tryJoinGame(name);
 
@@ -161,7 +176,15 @@ export default function JoinPage() {
 
     const unsubPlayers = onPlayersChanged(gameId, (data) => {
       setPlayers(data);
-      setPlayersLoaded(true);
+
+      if (screenRef.current === 'playing' && playerIdRef.current && joinedAtRef.current) {
+        const elapsed = Date.now() - joinedAtRef.current;
+        if (elapsed >= 2000 && (!data || !data[playerIdRef.current])) {
+          clearInterval(pollRef.current);
+          pollRef.current = null;
+          setScreen('kicked');
+        }
+      }
     });
 
     // Al salir de la página, apagamos los vigilantes y el polling
@@ -177,35 +200,11 @@ export default function JoinPage() {
     return () => clearInterval(pollRef.current);
   }, []);
 
-  // Fix bug P15: resetear openSubmitted cada vez que el juego entra en fase open_question
-  // Evita que un estado stale de una sesión anterior marque la pregunta como ya respondida
-  useEffect(() => {
-    if (gameState?.phase === 'open_question') {
-      setOpenSubmitted(false);
-    }
-  }, [gameState?.phase]);
-
-  // Detectar si el host nos sacó del lobby:
-  // Fix race condition: solo marcar 'kicked' si ya han pasado al menos 2s desde que nos unimos.
-  // Esto evita que un snapshot lento de players llegue antes que el nuestro y nos marque como expulsados por error.
-  const joinedAtRef = useRef(null);
   useEffect(() => {
     if (screen === 'playing' && !joinedAtRef.current) {
       joinedAtRef.current = Date.now();
     }
   }, [screen]);
-
-  useEffect(() => {
-    if (screen === 'playing' && playerId && playersLoaded) {
-      const elapsed = joinedAtRef.current ? Date.now() - joinedAtRef.current : 0;
-      if (elapsed < 2000) return; // Esperar al menos 2s antes de verificar kick
-      if (!players || !players[playerId]) {
-        clearInterval(pollRef.current);
-        pollRef.current = null; // ✅ Fix: resetear ref
-        setScreen('kicked');
-      }
-    }
-  }, [players, playerId, screen, playersLoaded]);
 
   // ──────────────────────────────────────────────────────────────────────────
   // Enviar respuesta a pregunta de selección múltiple
@@ -322,12 +321,14 @@ export default function JoinPage() {
             onClick={() => {
               isJoiningRef.current = false;
               isSubmittingRef.current = false;
+              setOpenSubmitted(false);
               setScreen('name');
               setNickname('');
+              setDisplayNickname('');
+              joinedAtRef.current = null;
               setGameId(null);
               setGameState(null);
               setPlayers(null);
-              setPlayersLoaded(false);
             }}
             style={{
               marginTop: '1.5rem',
@@ -364,12 +365,14 @@ export default function JoinPage() {
             onClick={() => {
               isJoiningRef.current = false;
               isSubmittingRef.current = false;
+              setOpenSubmitted(false);
               setScreen('name');
               setNickname('');
+              setDisplayNickname('');
+              joinedAtRef.current = null;
               setGameId(null);
               setGameState(null);
               setPlayers(null);
-              setPlayersLoaded(false);
             }}
             style={{
               marginTop: '1.5rem',
@@ -436,7 +439,7 @@ export default function JoinPage() {
         {BackButton}
         <div className={styles.waitingCard}>
           <div className={styles.waitingIcon}>⏳</div>
-          <h2 className={styles.waitingTitle}>¡Hola, {pendingNickname.current}!</h2>
+          <h2 className={styles.waitingTitle}>¡Hola, {displayNickname}!</h2>
           <p className={styles.waitingText}>
             El host aún no ha abierto la sala.<br />
             Te unirás automáticamente cuando esté lista.

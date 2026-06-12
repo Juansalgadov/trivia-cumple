@@ -1,10 +1,15 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import styles from './Leaderboard.module.css';
 
 // Emojis para el podio (1°, 2°, 3° lugar)
 const POSITION_EMOJIS = { 1: '🥇', 2: '🥈', 3: '🥉' };
+
+const seededRandom = (seed) => {
+  const value = Math.sin(seed + 1) * 10000;
+  return value - Math.floor(value);
+};
 
 /**
  * Pantalla del Ranking Final.
@@ -18,12 +23,13 @@ const POSITION_EMOJIS = { 1: '🥇', 2: '🥈', 3: '🥉' };
 export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
   // El ranking llega ordenado de mayor a menor (pos 1, 2, 3...).
   // Para el host lo invertimos: peor nota primero, mejor nota al final.
-  const orderedRanking = isHost ? [...(ranking || [])].reverse() : (ranking || []);
+  const orderedRanking = useMemo(
+    () => (isHost ? [...(ranking || [])].reverse() : (ranking || [])),
+    [isHost, ranking]
+  );
 
   // Cuántos se han revelado (el host los va desbloqueando de a uno)
   const [revealedCount, setRevealedCount] = useState(0);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [confettiPieces, setConfettiPieces] = useState([]);
 
   // Revelar el siguiente jugador (también funciona con el botón en pantalla)
   const revealNext = useCallback(() => {
@@ -42,24 +48,22 @@ export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
     return () => window.removeEventListener('keydown', handleKey);
   }, [isHost, revealNext]);
 
-  // Cuando se revela al último, lanzar confetti si hay alguien con nota perfecta
-  useEffect(() => {
-    if (!isHost) return;
-    if (revealedCount < orderedRanking.length || orderedRanking.length === 0) return;
-    if (orderedRanking.some((r) => r.grade >= 8.0)) {
-      const colors = ['#00d4ff', '#ff6b6b', '#f1c40f', '#2ecc71', '#00ff88'];
-      setConfettiPieces(Array.from({ length: 60 }).map((_, i) => ({
-        id: i,
-        x: `${Math.random() * 100}vw`,
-        delay: `${Math.random() * 2}s`,
-        duration: `${2 + Math.random() * 3}s`,
-        color: colors[Math.floor(Math.random() * colors.length)],
-      })));
-      setShowConfetti(true);
-    }
-  }, [revealedCount, orderedRanking, isHost]);
+  const allRevealed = revealedCount >= orderedRanking.length;
+  const shouldShowConfetti = isHost && allRevealed && orderedRanking.some((r) => r.grade >= 8.0);
 
-  // ── Pantalla para JUGADORES: esperar a que el host revele en la TV ──
+  const confettiPieces = useMemo(() => {
+    if (!shouldShowConfetti) return [];
+    const colors = ['#00d4ff', '#ff6b6b', '#f1c40f', '#2ecc71', '#00ff88'];
+    return Array.from({ length: 60 }).map((_, i) => ({
+      id: i,
+      x: `${seededRandom(i) * 100}vw`,
+      delay: `${seededRandom(i + 100) * 2}s`,
+      duration: `${2 + seededRandom(i + 200) * 3}s`,
+      color: colors[Math.floor(seededRandom(i + 300) * colors.length)],
+    }));
+  }, [shouldShowConfetti]);
+
+  // ————————— Pantalla para JUGADORES: esperar a que el host revele en la TV —————————
   if (!isHost) {
     return (
       <div className={styles.leaderboardContainer}>
@@ -79,14 +83,13 @@ export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
     );
   }
 
-  // ── Pantalla para el HOST ──
-  const allRevealed = revealedCount >= orderedRanking.length;
+  // ————————— Pantalla para el HOST —————————
   const remaining = orderedRanking.length - revealedCount;
 
   return (
     <div className={styles.leaderboardContainer}>
       {/* Confetti */}
-      {showConfetti && (
+      {shouldShowConfetti && (
         <div className={styles.confettiContainer}>
           {confettiPieces.map((piece) => (
             <div
@@ -132,7 +135,7 @@ export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
             <div
               key={entry.playerId}
               className={`${styles.rankingRow} ${isPerfect ? styles.perfectRow : ''} ${isTop3 ? styles.topRow : ''}`}
-              style={{ animationDelay: `0s` }}
+              style={{ animationDelay: '0s' }}
             >
               <div className={styles.position}>
                 {POSITION_EMOJIS[entry.position] || (
@@ -158,18 +161,14 @@ export default function Leaderboard({ ranking, isHost, onShowAnswers }) {
       {/* Botón de revelar — desaparece cuando todos han sido revelados */}
       {!allRevealed && (
         <button className={styles.revealNextButton} onClick={revealNext}>
-          ▶ Revelar siguiente ({remaining} restante{remaining !== 1 ? 's' : ''})
+          {remaining > 1 ? `REVELAR SIGUIENTE (${remaining} restantes)` : 'REVELAR ÚLTIMO'}
         </button>
       )}
 
-      {/* Botón de ver respuestas — aparece solo después de revelar todos */}
+      {/* Botón para mostrar respuestas correctas al final */}
       {allRevealed && onShowAnswers && (
-        <button
-          className={styles.showAnswersButton}
-          onClick={onShowAnswers}
-          style={{ animation: 'fadeInUp 0.5s ease' }}
-        >
-          💡 Ver Respuestas Correctas
+        <button className={styles.showAnswersButton} onClick={onShowAnswers}>
+          VER RESPUESTAS CORRECTAS
         </button>
       )}
     </div>

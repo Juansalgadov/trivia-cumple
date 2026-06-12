@@ -17,8 +17,6 @@ const OPTION_COLORS = {
  * Solo muestra cuántos votaron cada opción.
  */
 export default function ResultsChart({ question, questionNumber, players, questionIndex, onNext, isLastQuestion }) {
-  if (!question) return null;
-
   // Avanzar rápido con la flecha derecha o Enter
   useEffect(() => {
     const handleKey = (e) => {
@@ -29,6 +27,8 @@ export default function ResultsChart({ question, questionNumber, players, questi
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [onNext]);
+
+  if (!question) return null;
 
   // Contamos cuántos jugadores eligieron cada opción
   const counts = { A: 0, B: 0, C: 0, D: 0 };
