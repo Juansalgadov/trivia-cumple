@@ -309,4 +309,26 @@ MIT — Usa, modifica y comparte libremente.
 
 ---
 
+## 🤖 Prompt para v0 (Mejora de UI/UX)
+
+Copia y pega el siguiente texto en v0 para que genere mejoras visuales sobre esta base:
+
+```text
+Eres un experto en diseño UI/UX y Tailwind CSS. Tengo una aplicación web Next.js tipo Kahoot para cumpleaños, dividida en dos vistas principales: una pantalla para el Host (TV/PC) y una pantalla para los Jugadores (móvil).
+
+La lógica, estados y sincronización en tiempo real con Firebase ya están 100% implementados y funcionando perfecto. Tu objetivo es **únicamente mejorar el diseño visual** (HTML/CSS/Tailwind) sin romper la estructura de componentes ni la lógica de React.
+
+Aquí están las directrices de diseño que busco:
+1. **Aesthetics Premium**: Quiero un diseño deslumbrante ("WOW factor"). Usa paletas de colores armoniosas (ej. HSL ajustados, dark mode elegante, glassmorphism avanzado).
+2. **Micro-animaciones**: Agrega transiciones suaves al hacer hover, al revelar opciones de respuestas, y al mostrar el leaderboard.
+3. **Móvil (Jugadores)**: Los botones de respuesta (A, B, C, D) deben verse inmensos, súper clickeables y satisfactorios (estilo Kahoot pero más moderno).
+4. **Host (TV)**: La pregunta debe destacar mucho. Los contadores de "Ya respondieron" y el leaderboard deben parecer paneles holográficos o tarjetas de cristal.
+5. **Tecnología**: Usa Tailwind CSS y si es posible, componentes inspirados en Shadcn UI (sin necesidad de instalarlos, puedes recrearlos con clases de Tailwind).
+6. **Regla de Oro**: NO modifiques los `useEffect`, la lógica de Firebase, ni los estados (`useState`). Solo modifica las clases CSS (`className`), añade iconos (Lucide React) y mejora la estructura visual (divs, flex, grid).
+
+Genera el código de las vistas principales (`QuestionDisplay.js`, `AnswerButtons.js` y `Leaderboard.js`) aplicando estas mejoras visuales deslumbrantes.
+```
+
+---
+
 Hecho con ❤️ para el cumpleaños de Juan 🎂

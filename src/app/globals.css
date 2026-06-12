@@ -82,8 +82,11 @@ html {
 }
 
 body {
-  /* Fondo con gradiente oscuro "deep space" */
-  background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-mid), var(--color-bg-end));
+  /* Fondo con gradiente oscuro "deep space" animado */
+  background: linear-gradient(-45deg, var(--color-bg-start), var(--color-bg-mid), var(--color-bg-end), #1a103c);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  
   /* Fondo fijo para que el gradiente no se mueva al hacer scroll */
   background-attachment: fixed;
   
@@ -101,6 +104,18 @@ body {
   
   /* Prevenir el overscroll bounce en iOS */
   overscroll-behavior: none;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* ===== SCROLLBAR PERSONALIZADA ===== */
