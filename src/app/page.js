@@ -6,7 +6,7 @@ import styles from './page.module.css';
 
 const HOST_PASSWORD = 'yeye123?';
 
-/* ─── Canvas de particulas flotantes ─── */
+/* ─── Canvas de particulas ─── */
 function ParticleCanvas() {
   const canvasRef = useRef(null);
 
@@ -22,18 +22,20 @@ function ParticleCanvas() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Crear particulas
-    const PARTICLE_COUNT = 55;
-    const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
-      x:    Math.random() * window.innerWidth,
-      y:    Math.random() * window.innerHeight,
-      r:    Math.random() * 1.8 + 0.4,
-      vx:   (Math.random() - 0.5) * 0.25,
-      vy:   (Math.random() - 0.5) * 0.22,
-      // mezcla de dorado y cyan
-      gold: Math.random() > 0.5,
-      opacity: Math.random() * 0.35 + 0.1,
-    }));
+    const PARTICLE_COUNT = 80;
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => {
+      const gold = Math.random() > 0.42;
+      return {
+        x:       Math.random() * window.innerWidth,
+        y:       Math.random() * window.innerHeight,
+        r:       Math.random() * 2.4 + 0.4,
+        vx:      (Math.random() - 0.5) * 0.28,
+        vy:      (Math.random() - 0.5) * 0.24,
+        gold,
+        opacity: Math.random() * 0.45 + 0.1,
+        pulse:   Math.random() * Math.PI * 2,
+      };
+    });
 
     let animId;
     const draw = () => {
@@ -41,16 +43,17 @@ function ParticleCanvas() {
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
+        p.pulse += 0.016;
         if (p.x < -5) p.x = canvas.width + 5;
         if (p.x > canvas.width + 5) p.x = -5;
         if (p.y < -5) p.y = canvas.height + 5;
         if (p.y > canvas.height + 5) p.y = -5;
-
+        const alpha = p.opacity * (0.65 + 0.35 * Math.sin(p.pulse));
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = p.gold
-          ? `rgba(245, 166, 35, ${p.opacity})`
-          : `rgba(0, 212, 255, ${p.opacity * 0.75})`;
+          ? `rgba(245,166,35,${alpha})`
+          : `rgba(0,212,255,${alpha * 0.65})`;
         ctx.fill();
       });
       animId = requestAnimationFrame(draw);
@@ -71,7 +74,13 @@ export default function GatewayPage() {
   const [screen, setScreen]     = useState('choose');
   const [password, setPassword] = useState('');
   const [error, setError]       = useState(null);
+  const [mounted, setMounted]   = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(t);
+  }, []);
 
   const handleHostSelect = () => {
     setScreen('host_auth');
@@ -93,74 +102,111 @@ export default function GatewayPage() {
   };
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${mounted ? styles.pageMounted : ''}`}>
       <ParticleCanvas />
+
+      {/* Orbs atmosfericos de glow */}
+      <div className={styles.orbGold} aria-hidden="true" />
+      <div className={styles.orbCyan} aria-hidden="true" />
+      <div className={styles.orbDeep} aria-hidden="true" />
 
       {/* Barra superior */}
       <header className={styles.topBar}>
         <div className={styles.topBarBrand}>
-          <span className={styles.topBarDot} />
+          <span className={styles.topBarPulse} aria-hidden="true" />
           <span className={styles.topBarLabel}>Fiesta Interactiva</span>
         </div>
-        <span className={styles.topBarMeta}>Trivia &mdash; Cumpleaños Juan</span>
+        <span className={styles.topBarYear}>2025</span>
       </header>
 
       {/* ── Pantalla: Seleccion de rol ── */}
       {screen === 'choose' && (
-        <>
-          {/* Hero */}
-          <section className={styles.heroSection}>
-            <div className={styles.tagline}>
-              <span className={styles.taglineLine} />
-              En tiempo real
-              <span className={styles.taglineLine} />
-            </div>
-            <h1 className={styles.heroTitle}>
-              ¿Cuánto conoces<br />a <em>Juan</em>?
-            </h1>
-            <p className={styles.heroSub}>Responde desde tu celular y compite con todos los invitados</p>
-          </section>
+        <main className={styles.main}>
 
-          {/* Separador */}
-          <div className={styles.dividerRow}>
-            <span className={styles.dividerLine} />
-            <span className={styles.dividerLabel}>Elige tu rol para comenzar</span>
-            <span className={styles.dividerLine} />
+          {/* Columna izquierda: hero texto */}
+          <div className={styles.heroCol}>
+            <p className={styles.eyebrow}>
+              <span className={styles.eyebrowLine} aria-hidden="true" />
+              Trivia en tiempo real
+            </p>
+
+            <h1 className={styles.heroTitle}>
+              <span className={styles.line1}>¿Cuánto</span>
+              <span className={styles.line2}>conoces</span>
+              <span className={styles.line3}>a <em>Juan</em>?</span>
+            </h1>
+
+            <p className={styles.heroSub}>
+              Responde desde tu celular y compite en vivo con todos los invitados.
+            </p>
+
+            <div className={styles.statRow}>
+              <div className={styles.stat}>
+                <span className={styles.statVal}>14</span>
+                <span className={styles.statKey}>preguntas</span>
+              </div>
+              <span className={styles.statSep} aria-hidden="true" />
+              <div className={styles.stat}>
+                <span className={styles.statVal}>∞</span>
+                <span className={styles.statKey}>jugadores</span>
+              </div>
+              <span className={styles.statSep} aria-hidden="true" />
+              <div className={styles.stat}>
+                <span className={styles.statVal}>1</span>
+                <span className={styles.statKey}>ganador</span>
+              </div>
+            </div>
           </div>
 
-          {/* Split de roles */}
-          <div className={styles.splitRow}>
-            {/* Host */}
+          {/* Columna derecha: cards de rol */}
+          <div className={styles.rolesCol}>
+
             <button
               className={`${styles.roleCard} ${styles.hostCard}`}
               onClick={handleHostSelect}
               aria-label="Acceder como Host"
             >
-              <span className={styles.cardBigIcon} aria-hidden="true">🖥️</span>
-              <span className={styles.cardNumber}>01 — Host</span>
-              <span className={styles.cardTitle}>Soy el<br />Host</span>
-              <span className={styles.cardDesc}>Controla el juego desde la TV.<br />Lanza preguntas y revela el ranking.</span>
-              <span className={styles.cardCta}>
-                Ingresar <span className={styles.ctaArrow}>→</span>
-              </span>
+              <div className={styles.cardGlowFill} aria-hidden="true" />
+              <div className={styles.cardTop}>
+                <span className={styles.cardNum}>01</span>
+                <span className={styles.cardEmoji} aria-hidden="true">🖥️</span>
+              </div>
+              <h2 className={styles.cardTitle}>Soy el Host</h2>
+              <p className={styles.cardDesc}>
+                Controla el juego desde la TV — lanza preguntas y revela el ranking.
+              </p>
+              <div className={styles.cardCta}>
+                <span>Ingresar</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
             </button>
 
-            {/* Jugador */}
             <button
               className={`${styles.roleCard} ${styles.joinCard}`}
               onClick={handlePlayerSelect}
               aria-label="Unirse como jugador"
             >
-              <span className={styles.cardBigIcon} aria-hidden="true">📱</span>
-              <span className={styles.cardNumber}>02 — Jugador</span>
-              <span className={styles.cardTitle}>Soy<br />Jugador</span>
-              <span className={styles.cardDesc}>Únete desde tu celular.<br />Ingresa tu nombre y juega.</span>
-              <span className={styles.cardCta}>
-                Unirme <span className={styles.ctaArrow}>→</span>
-              </span>
+              <div className={styles.cardGlowFill} aria-hidden="true" />
+              <div className={styles.cardTop}>
+                <span className={styles.cardNum}>02</span>
+                <span className={styles.cardEmoji} aria-hidden="true">📱</span>
+              </div>
+              <h2 className={styles.cardTitle}>Soy Jugador</h2>
+              <p className={styles.cardDesc}>
+                {`Únete desde tu celular — ingresa tu nombre y responde en tiempo real.`}
+              </p>
+              <div className={styles.cardCta}>
+                <span>Unirme</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
             </button>
+
           </div>
-        </>
+        </main>
       )}
 
       {/* ── Pantalla: Auth del host ── */}
@@ -174,11 +220,9 @@ export default function GatewayPage() {
           </button>
 
           <div className={styles.authCard}>
-            <div className={styles.authHeader}>
-              <div className={styles.lockIconWrap} aria-hidden="true">🔒</div>
-              <h2 className={styles.authTitle}>Acceso de Host</h2>
-              <p className={styles.authDesc}>Ingresa la contraseña para controlar el juego desde la TV</p>
-            </div>
+            <div className={styles.lockIconWrap} aria-hidden="true">🔒</div>
+            <h2 className={styles.authTitle}>Acceso de Host</h2>
+            <p className={styles.authDesc}>Ingresa la contraseña para controlar el juego desde la TV</p>
 
             <form onSubmit={handleHostLogin} className={styles.authForm}>
               <input
